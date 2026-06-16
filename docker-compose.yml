@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: financial_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: financial_postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_DB=financial_platform
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: financial_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DATABASE_URL=postgresql://postgres:postgres_password@db:5432/financial_platform
+      - HF_HOME=/app/data/cache/huggingface
+      - SENTENCE_TRANSFORMERS_HOME=/app/data/cache/sentence_transformers
+      - CHROMA_DB_DIR=/app/data/chromadb
+    env_file:
+      - ./backend/.env
+    volumes:
+      - backend_data:/app/data
+    depends_on:
+      - redis
+      - db
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+  backend_data:
+    driver: local

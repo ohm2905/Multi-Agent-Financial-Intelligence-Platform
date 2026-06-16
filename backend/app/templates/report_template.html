@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    @page cover_page {
+        size: a4;
+        margin: 2cm;
+    }
+    @page main_page {
+        size: a4;
+        margin: 2.5cm 1.5cm 2.5cm 1.5cm;
+        @frame footer {
+            -pdf-keep-with-next: true;
+            bottom: 1cm;
+            left: 1.5cm;
+            height: 1cm;
+            width: 18cm;
+        }
+    }
+    
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        color: #2D3748;
+        font-size: 10pt;
+        line-height: 1.5;
+    }
+    
+    #footer_content {
+        -pdf-frame: footer;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Cover Page */
+    .cover-container {
+        text-align: center;
+        padding-top: 3cm;
+    }
+    .cover-container h1 {
+        font-size: 28pt;
+        color: #1A365D;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .cover-container .subtitle {
+        font-size: 16pt;
+        color: #4A5568;
+        margin-bottom: 40px;
+    }
+    .cover-container .divider {
+        height: 4px;
+        background-color: #3182CE;
+        width: 150px;
+        margin: 0 auto 40px auto;
+    }
+    .cover-container .meta {
+        font-size: 11pt;
+        color: #718096;
+        line-height: 2;
+        margin-top: 3cm;
+        text-align: left;
+        display: inline-block;
+        border-top: 1px solid #E2E8F0;
+        padding-top: 20px;
+        width: 80%;
+    }
+    
+    /* Section Styles */
+    h1.section-title {
+        font-size: 18pt;
+        color: #1A365D;
+        border-bottom: 2px solid #3182CE;
+        padding-bottom: 5px;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        page-break-after: avoid;
+    }
+    h2 {
+        font-size: 13pt;
+        color: #2B6CB0;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        page-break-after: avoid;
+    }
+    h3 {
+        font-size: 11pt;
+        color: #2D3748;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        page-break-after: avoid;
+    }
+    p {
+        margin-bottom: 10px;
+    }
+    
+    /* Tables */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+    }
+    th {
+        background-color: #2B6CB0;
+        color: white;
+        font-weight: bold;
+        padding: 8px;
+        font-size: 9pt;
+        border: 1px solid #CBD5E0;
+        text-align: left;
+    }
+    td {
+        padding: 8px;
+        font-size: 9pt;
+        border: 1px solid #E2E8F0;
+        text-align: left;
+    }
+    tr:nth-child(even) {
+        background-color: #F7FAFC;
+    }
+    
+    /* Cards and Key metrics */
+    .score-container {
+        text-align: center;
+        background-color: #EBF8FF;
+        border: 2px solid #BEE3F8;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+    .score-number {
+        font-size: 36pt;
+        font-weight: bold;
+        color: #2B6CB0;
+    }
+    .score-label {
+        font-size: 12pt;
+        color: #2C5282;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    .badge {
+        padding: 4px 8px;
+        font-weight: bold;
+        border-radius: 3px;
+        font-size: 8pt;
+    }
+    .badge-buy { background-color: #C6F6D5; color: #22543D; }
+    .badge-hold { background-color: #FEFCBF; color: #744210; }
+    .badge-sell { background-color: #FED7D7; color: #742A2A; }
+    
+    .text-success { color: #38A169; }
+    .text-danger { color: #E53E3E; }
+    .text-warning { color: #DD6B20; }
+    .text-secondary { color: #718096; }
+</style>
+</head>
+<body>
+    <!-- Footer content that gets automatically rendered on pages with the main_page template -->
+    <div id="footer_content">
+        <table style="width: 100%; border: none; margin: 0; padding: 0;">
+            <tr style="border: none; background: transparent;">
+                <td style="border: none; font-size: 8pt; color: #718096; padding: 0;">Multi-Agent Financial Intelligence Platform</td>
+                <td style="border: none; font-size: 8pt; color: #718096; text-align: right; padding: 0;">Page <pdf:pagenumber> of <pdf:pagecount></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Cover Page -->
+    <div class="cover-container" style="-pdf-page-template: cover_page;">
+        <h1>{{ company_name }}</h1>
+        <div class="subtitle">{{ ticker }} — Investment Advisory Report</div>
+        <div class="divider"></div>
+        <div class="score-container" style="width: 250px; margin: 0 auto;">
+            <div class="score-number">{{ investment_score }}</div>
+            <div class="score-label">Consolidated Score</div>
+        </div>
+        <div class="meta">
+            <table style="width: 100%; margin: 0;">
+                <tr style="background: transparent;">
+                    <td style="border: none; width: 40%; padding: 4px;"><strong>Orchestrated by:</strong></td>
+                    <td style="border: none; padding: 4px;">Multi-Agent Intelligence System</td>
+                </tr>
+                <tr style="background: transparent;">
+                    <td style="border: none; padding: 4px;"><strong>Generated on:</strong></td>
+                    <td style="border: none; padding: 4px;">{{ timestamp }}</td>
+                </tr>
+                <tr style="background: transparent;">
+                    <td style="border: none; padding: 4px;"><strong>Final Recommendation:</strong></td>
+                    <td style="border: none; padding: 4px;"><span class="badge badge-{{ rec_class }}">{{ recommendation }}</span></td>
+                </tr>
+                <tr style="background: transparent;">
+                    <td style="border: none; padding: 4px;"><strong>XGBoost Prediction:</strong></td>
+                    <td style="border: none; padding: 4px;"><span class="text-{{ prediction_class_color }}" style="font-weight: bold;">{{ ml_prediction }}</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Page 2: Key Metrics & Data Profile -->
+    <div style="-pdf-page-template: main_page; page-break-before: always; page-break-after: always;">
+        <h1 class="section-title">Investment Profile</h1>
+        
+        <h2>Financial Profile</h2>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 25%; font-weight: bold; background-color: #F7FAFC;">Market Capitalization</td>
+                <td style="width: 25%;">{{ market_cap }}</td>
+                <td style="width: 25%; font-weight: bold; background-color: #F7FAFC;">Trailing P/E Ratio</td>
+                <td style="width: 25%;">{{ pe_ratio }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; background-color: #F7FAFC;">EPS (INR)</td>
+                <td>{{ eps }}</td>
+                <td style="font-weight: bold; background-color: #F7FAFC;">Debt / Equity</td>
+                <td>{{ debt_equity }}</td>
+            </tr>
+        </table>
+        
+        <h2>Risk & Volatility Profile</h2>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 25%; font-weight: bold; background-color: #F7FAFC;">Volatility (Annualized)</td>
+                <td style="width: 25%;">{{ volatility }}</td>
+                <td style="width: 25%; font-weight: bold; background-color: #F7FAFC;">Beta (vs Nifty 50)</td>
+                <td style="width: 25%;">{{ beta }}</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold; background-color: #F7FAFC;">Sharpe Ratio</td>
+                <td>{{ sharpe_ratio }}</td>
+                <td style="font-weight: bold; background-color: #F7FAFC;">Max Drawdown</td>
+                <td>{{ max_drawdown }}</td>
+            </tr>
+        </table>
+
+        <h2>XGBoost & SHAP Explainability</h2>
+        <p><strong>Predicted 30-Day Trend Class:</strong> {{ ml_prediction }} (Confidence: {{ ml_confidence }}%)</p>
+        <p>The top features driving this model prediction are listed below in order of SHAP impact value:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Feature</th>
+                    <th style="width: 25%;">SHAP Impact Value</th>
+                    <th style="width: 25%;">Direction</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feature, details in shap_features.items() %}
+                <tr>
+                    <td>{{ feature }}</td>
+                    <td>{{ details.value }}</td>
+                    <td class="text-{{ details.color }}">{{ details.direction }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">No SHAP explanation features recorded.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>News & Media Sentiment</h2>
+        <p>FinBERT-tone analysis on recent media headlines:</p>
+        <table style="width: 100%; border: none;">
+            <tr style="border: none; background: transparent;">
+                <td style="width: 33%; text-align: center; background-color: #DEF7EC; color: #03543F; font-weight: bold; border: 1px solid #A3E635;">Positive: {{ sentiment_positive }}%</td>
+                <td style="width: 33%; text-align: center; background-color: #F3F4F6; color: #374151; font-weight: bold; border: 1px solid #D1D5DB;">Neutral: {{ sentiment_neutral }}%</td>
+                <td style="width: 33%; text-align: center; background-color: #FDE8E8; color: #9B1C1C; font-weight: bold; border: 1px solid #FCA5A5;">Negative: {{ sentiment_negative }}%</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Page 3: Consolidated AI Advisory Report (Markdown converted to HTML) -->
+    <div style="-pdf-page-template: main_page;">
+        <h1 class="section-title">Consolidated AI Advisory Report</h1>
+        <div class="markdown-body">
+            {{ report_html | safe }}
+        </div>
+    </div>
+</body>
+</html>

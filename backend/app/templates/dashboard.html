@@ -1,0 +1,2819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Financial Intelligence Platform</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Local Premium Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css?v=1.8">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Marked.js for Markdown advisory report rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Initialize theme instantly before body renders to avoid layout flashes
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- Navbar/Header -->
+    <nav class="navbar navbar-expand-lg border-bottom border-secondary-subtle py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-cpu me-2 fs-3"></i>
+                <span class="fs-4 fw-bold text-white">Financial <span class="gradient-text">Intelligence</span> Platform</span>
+            </a>
+            <div class="d-flex align-items-center ms-auto">
+                <button class="btn btn-outline-primary btn-sm me-3" data-bs-toggle="modal" data-bs-target="#workflowModal">
+                    <i class="bi bi-diagram-3 me-1"></i> How It Works
+                </button>
+                <button id="theme-toggle" class="btn btn-outline-secondary btn-sm me-3" title="Toggle Theme">
+                    <i class="bi bi-sun" id="theme-toggle-icon"></i>
+                </button>
+                <button class="btn btn-outline-info btn-sm me-3" data-bs-toggle="modal" data-bs-target="#metricsModal" onclick="fetchSystemMetrics()">
+                    <i class="bi bi-activity me-1"></i> System Metrics
+                </button>
+                <span class="badge bg-secondary-subtle text-dark-emphasis border border-secondary px-3 py-2">
+                    <i class="bi bi-globe me-1"></i> NSE India Market Active
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="container mt-4">
+        
+        <!-- Search and Ticker Section -->
+        <div class="premium-card p-4 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h2 class="mb-1 text-white">Automated Stock Advisory Copilot</h2>
+                    <p class="text-secondary mb-0">Enter an Indian stock ticker to calculate technical metrics, evaluate risk profiles, and fetch financial health statistics.</p>
+                </div>
+                <div class="col-md-5">
+                    <form id="search-form" class="d-flex gap-2">
+                        <input type="text" id="ticker-input" class="form-control search-input" placeholder="e.g. TCS, RELIANCE, INFY" required autocomplete="off">
+                        <button type="submit" id="search-btn" class="btn search-btn d-flex align-items-center gap-2">
+                            <span id="btn-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            <i class="bi bi-search" id="btn-icon"></i> Analyze
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Notification Box -->
+        <div id="error-alert" class="alert alert-danger d-none border-danger-subtle bg-danger-subtle text-danger-emphasis rounded-3 p-3 mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span id="error-message">Error message details here.</span>
+        </div>
+
+        <!-- Welcome Placeholder (Visible before first search) -->
+        <div id="welcome-panel" class="premium-card text-center p-5">
+            <i class="bi bi-bar-chart-steps text-info display-1 mb-4"></i>
+            <h3 class="text-white">Ready for Stock Analysis</h3>
+            <p class="text-secondary mx-auto" style="max-width: 600px;">
+                Search for any major National Stock Exchange (NSE) ticker above. The multi-agent system will pull real-time company metadata, daily price histories, and calculate risk metrics instantly.
+            </p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <button onclick="prefillTicker('TCS')" class="btn btn-outline-secondary btn-sm px-3 rounded-pill">Analyze TCS</button>
+                <button onclick="prefillTicker('RELIANCE')" class="btn btn-outline-secondary btn-sm px-3 rounded-pill">Analyze Reliance</button>
+                <button onclick="prefillTicker('INFY')" class="btn btn-outline-secondary btn-sm px-3 rounded-pill">Analyze Infosys</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Analytics Layout (Hidden initially until search) -->
+        <div id="dashboard-layout" class="d-none">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs border-secondary-subtle mb-4" id="dashboardTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-white" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview-content" type="button" role="tab" aria-controls="overview-content" aria-selected="true">
+                        <i class="bi bi-grid me-2 text-info"></i>Overview
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white" id="research-tab" data-bs-toggle="tab" data-bs-target="#research-content" type="button" role="tab" aria-controls="research-content" aria-selected="false">
+                        <i class="bi bi-search me-2 text-info"></i>Research
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio-content" type="button" role="tab" aria-controls="portfolio-content" aria-selected="false" onclick="fetchPortfolio()">
+                        <i class="bi bi-folder2-open me-2 text-info"></i>Portfolio
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-white" id="report-tab" data-bs-toggle="tab" data-bs-target="#report-content" type="button" role="tab" aria-controls="report-content" aria-selected="false" onclick="loadRecentAnalyses()">
+                        <i class="bi bi-file-earmark-text me-2 text-info"></i>Reports
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="dashboardTabsContent">
+                <!-- Tab 1: Overview -->
+                <div class="tab-pane fade show active" id="overview-content" role="tabpanel" aria-labelledby="overview-tab">
+                    
+                    <!-- Company Profile and Chart row -->
+                    <div class="row g-4 mb-4">
+                        <!-- Company Overview Profile Card -->
+                        <div class="col-lg-4">
+                            <div class="premium-card p-4 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 fs-6 rounded-3" id="stock-ticker-badge">TCS.NS</span>
+                                        <h3 class="mb-0 ms-3 text-white" id="company-name">Tata Consultancy Services</h3>
+                                    </div>
+                                    <hr class="border-secondary-subtle">
+                                    <h5 class="text-white mb-3" style="font-size: 1.05rem;">Company Overview</h5>
+                                    
+                                    <p class="text-secondary mb-2"><strong>Sector:</strong> <span id="stock-sector" class="text-white">Technology</span></p>
+                                    <p class="text-secondary mb-2"><strong>Industry:</strong> <span id="stock-industry" class="text-white">IT Services</span></p>
+                                    <p class="text-secondary mb-2"><strong>Market Cap:</strong> <span id="stock-market-cap" class="text-white">₹0.00 Cr</span></p>
+                                    <p class="text-secondary mb-3"><strong>Current Price:</strong> <span id="stock-price" class="text-white fw-bold">₹0.00</span></p>
+                                    
+                                    <hr class="border-secondary-subtle">
+                                    <p class="text-secondary mb-1"><strong>Description:</strong></p>
+                                    <div id="stock-description-container">
+                                        <p class="text-secondary line-clamp-3 mb-1" id="stock-summary" style="font-size: 0.875rem; line-height: 1.5;"></p>
+                                        <button id="description-toggle-btn" class="btn btn-link text-info p-0 fs-7" onclick="toggleDescription()" style="display: none; text-decoration: none; font-size: 0.8rem;">[Read More]</button>
+                                    </div>
+                                </div>
+                                <div class="mt-3 border-top border-secondary-subtle pt-2">
+                                    <span class="text-secondary fs-7"><i class="bi bi-clock me-1"></i> Data powered by yfinance & Redis</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price Chart -->
+                        <div class="col-lg-8">
+                            <div class="premium-card p-4 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 text-white"><i class="bi bi-graph-up text-info me-2"></i> Stock Price History (1 Year)</h4>
+                                    <span class="text-secondary fs-7" id="chart-update-time">Daily Close Prices</span>
+                                </div>
+                                <div style="position: relative; height: 320px; width: 100%;">
+                                    <canvas id="stock-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financials and Risk Metrics Section -->
+                    <div class="row g-4 mb-4">
+                        <!-- Financial Profile Card -->
+                        <div class="col-lg-6">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="mb-3 text-white"><i class="bi bi-bank text-info me-2"></i> Financial Profile</h4>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Market Cap</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-market-cap">₹0.00 Cr</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Trailing P/E</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-pe">0.0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">EPS (INR)</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-eps">₹0.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Debt/Equity</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-debt-equity">0.0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Analysis Card -->
+                        <div class="col-lg-6">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="mb-3 text-white"><i class="bi bi-shield-exclamation text-info me-2"></i> Risk Profile</h4>
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Volatility</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-volatility">0.00%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Beta (Nifty)</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-beta">0.0</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Sharpe Ratio</div>
+                                            <div class="metric-value" style="font-size: 1.25rem;" id="val-sharpe">0.00</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                            <div class="metric-title">Risk Level</div>
+                                            <div class="metric-value text-warning" style="font-size: 1.25rem;" id="val-risk-level">Medium</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ML Trend Prediction Section -->
+                    <div class="row g-4 mb-4">
+                        <!-- ML Trend Prediction Card -->
+                        <div class="col-lg-5">
+                            <div class="premium-card p-4 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h4 class="mb-3 text-white"><i class="bi bi-robot text-info me-2"></i> XGBoost Prediction</h4>
+                                    <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle mb-3">
+                                        <div class="metric-title">Predicted 30-Day Trend</div>
+                                        <div class="metric-value" id="val-ml-prediction">Neutral</div>
+                                    </div>
+                                </div>
+                                <div class="mt-auto">
+                                    <div class="metric-title mb-2">Probability Distribution</div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div>
+                                            <div class="d-flex justify-content-between text-secondary" style="font-size: 0.8rem; margin-bottom: 2px;">
+                                                <span>Bullish</span>
+                                                <span id="lbl-prob-bullish" class="text-white">33%</span>
+                                            </div>
+                                            <div class="progress rounded-pill bg-dark" style="height: 6px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: 33%" id="pb-prob-bullish"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between text-secondary" style="font-size: 0.8rem; margin-bottom: 2px;">
+                                                <span>Neutral</span>
+                                                <span id="lbl-prob-neutral" class="text-white">33%</span>
+                                            </div>
+                                            <div class="progress rounded-pill bg-dark" style="height: 6px;">
+                                                <div class="progress-bar bg-secondary" role="progressbar" style="width: 34%" id="pb-prob-neutral"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between text-secondary" style="font-size: 0.8rem; margin-bottom: 2px;">
+                                                <span>Bearish</span>
+                                                <span id="lbl-prob-bearish" class="text-white">33%</span>
+                                            </div>
+                                            <div class="progress rounded-pill bg-dark" style="height: 6px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: 33%" id="pb-prob-bearish"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SHAP Explainability Card -->
+                        <div class="col-lg-7">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="mb-3 text-white"><i class="bi bi-key-fill text-info me-2"></i> ML SHAP Explanations (Feature Drivers)</h4>
+                                <div style="max-height: 240px; overflow-y: auto;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <h6 class="text-success mb-2" style="font-size: 0.9rem;" id="shap-pos-header"><i class="bi bi-plus-circle-fill me-1"></i> Top Positive Drivers</h6>
+                                            <ul class="ps-3 text-secondary mb-0" id="shap-pos-drivers" style="font-size: 0.85rem; line-height: 1.6;">
+                                                <li class="text-secondary">No explanations.</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6 class="text-danger mb-2" style="font-size: 0.9rem;" id="shap-neg-header"><i class="bi bi-dash-circle-fill me-1"></i> Top Negative Drivers</h6>
+                                            <ul class="ps-3 text-secondary mb-0" id="shap-neg-drivers" style="font-size: 0.85rem; line-height: 1.6;">
+                                                <li class="text-secondary">No explanations.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- End Tab 1 Overview Pane -->
+                
+                <!-- Tab 2: Research -->
+                <div class="tab-pane fade" id="research-content" role="tabpanel" aria-labelledby="research-tab">
+                    
+                    <!-- News Feed and News Sentiment Row -->
+                    <div class="row g-4 mb-4">
+                        <!-- News Sentiment Card -->
+                        <div class="col-lg-4">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="mb-3 text-white"><i class="bi bi-chat-heart text-info me-2"></i> News Sentiment</h4>
+                                <div class="d-flex flex-column justify-content-between" style="height: calc(100% - 40px);">
+                                    <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle mb-3">
+                                        <div class="metric-title">Overall Sentiment</div>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="metric-value" id="val-sentiment-label">Neutral</div>
+                                            <span class="badge bg-secondary-subtle text-light-emphasis border border-secondary px-2 py-1" id="val-sentiment-score" style="font-size: 0.8rem;">Score: 0.0</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-auto">
+                                        <div class="metric-title mb-2">Sentiment Distribution</div>
+                                        <div class="progress rounded-pill bg-dark mb-2" style="height: 12px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" id="pb-sentiment-pos" title="Positive"></div>
+                                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 100%" id="pb-sentiment-neu" title="Neutral"></div>
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 0%" id="pb-sentiment-neg" title="Negative"></div>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-secondary" style="font-size: 0.75rem;">
+                                            <span><i class="bi bi-circle-fill text-success me-1"></i> Pos: <span id="lbl-sentiment-pos" class="text-white">0%</span></span>
+                                            <span><i class="bi bi-circle-fill text-secondary me-1"></i> Neu: <span id="lbl-sentiment-neu" class="text-white">100%</span></span>
+                                            <span><i class="bi bi-circle-fill text-danger me-1"></i> Neg: <span id="lbl-sentiment-neg" class="text-white">0%</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- News Feed Card -->
+                        <div class="col-lg-8">
+                            <div class="premium-card p-4 h-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 text-white"><i class="bi bi-newspaper text-info me-2"></i> Recent Financial News</h4>
+                                    <span class="badge bg-secondary-subtle text-dark-emphasis border border-secondary-subtle" id="news-count">0 Articles Found</span>
+                                </div>
+                                <div class="d-flex flex-column gap-3 overflow-y-auto" style="max-height: 340px;" id="news-container">
+                                    <div class="text-secondary text-center py-4">No recent news fetched.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RAG Corporate Reports & Chat Section -->
+                    <div class="row g-4 mb-4">
+                        <!-- RAG Summary & Upload Card -->
+                        <div class="col-lg-6">
+                            <div class="premium-card p-4 d-flex flex-column justify-content-between" style="height: 450px;">
+                                <div>
+                                    <h4 class="mb-3 text-white"><i class="bi bi-file-earmark-pdf-fill text-info me-2"></i> Corporate Report Audit</h4>
+                                    <div id="rag-summary-container" style="max-height: 220px; overflow-y: auto;">
+                                        <p class="text-secondary" id="val-rag-summary">No reports uploaded yet.</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 border-top border-secondary-subtle pt-3">
+                                    <label class="form-label text-secondary" style="font-size: 0.85rem;">Upload Annual Report / Filing (PDF):</label>
+                                    <form id="upload-form" class="d-flex gap-2">
+                                        <input type="file" id="pdf-file-input" class="form-control file-input bg-dark border-secondary text-secondary" accept=".pdf" required>
+                                        <button type="submit" id="upload-btn" class="btn btn-info d-flex align-items-center gap-2">
+                                            <span id="upload-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            <i class="bi bi-upload" id="upload-icon"></i> Upload
+                                        </button>
+                                    </form>
+                                    <div id="upload-status" class="mt-2" style="font-size: 0.85rem;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RAG Chat Card -->
+                        <div class="col-lg-6">
+                            <div class="premium-card p-4 d-flex flex-column" style="height: 450px;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0 text-white"><i class="bi bi-chat-left-text-fill text-info me-2"></i> Chat Assistant</h4>
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Chat mode toggle">
+                                        <input type="radio" class="btn-check" name="chat-mode" id="chat-mode-rag" checked autocomplete="off" onchange="toggleChatMode('rag')">
+                                        <label class="btn btn-outline-info" for="chat-mode-rag">Report RAG</label>
+
+                                        <input type="radio" class="btn-check" name="chat-mode" id="chat-mode-copilot" autocomplete="off" onchange="toggleChatMode('copilot')">
+                                        <label class="btn btn-outline-info" for="chat-mode-copilot">Advisor Chat</label>
+                                    </div>
+                                </div>
+                                <div id="chat-messages" class="d-flex flex-column gap-2 overflow-y-auto mb-3 p-3 flex-grow-1" style="height: 0; min-height: 0; font-size: 0.9rem;">
+                                    <div class="text-secondary text-center py-5" id="chat-placeholder">
+                                        Upload a corporate report PDF on the left, then ask questions like: <br>
+                                        <em style="font-size: 0.85rem;">"What was the revenue growth rate?"</em> or <br>
+                                        <em style="font-size: 0.85rem;">"List the core business risks mentioned."</em>
+                                    </div>
+                                </div>
+                                <div class="mt-auto">
+                                    <form id="chat-form" class="d-flex gap-2">
+                                        <input type="text" id="chat-input" class="form-control search-input" placeholder="Ask a question about the reports..." required disabled autocomplete="off">
+                                        <button type="submit" id="chat-btn" class="btn btn-info px-4" disabled>
+                                            <span id="chat-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            Send
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Agent Observability Metrics -->
+                    <div class="premium-card p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center cursor-pointer" data-bs-toggle="collapse" data-bs-target="#agent-metrics-collapse" aria-expanded="false" aria-controls="agent-metrics-collapse" onclick="toggleChevron('agent-metrics-chevron')">
+                            <h4 class="mb-0 text-white"><i class="bi bi-cpu text-info me-2"></i> Agent Performance & Metrics</h4>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary-subtle text-dark-emphasis border border-secondary-subtle" id="logs-count">0 Agents Executed</span>
+                                <i class="bi bi-chevron-down text-secondary fs-5" id="agent-metrics-chevron"></i>
+                            </div>
+                        </div>
+                        <div class="collapse mt-3" id="agent-metrics-collapse">
+                            <div class="table-responsive">
+                                <table class="table table-dark table-hover table-borderless mb-0">
+                                    <thead>
+                                        <tr class="border-bottom border-secondary-subtle" style="font-size: 0.85rem;">
+                                            <th>Agent Name</th>
+                                            <th>Latency</th>
+                                            <th>Status</th>
+                                            <th>Cache</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="logs-table-body" style="font-size: 0.875rem;">
+                                        <tr class="text-secondary text-center"><td colspan="4" class="py-4">No agent logs.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tab 3: Portfolio -->
+                <div class="tab-pane fade" id="portfolio-content" role="tabpanel" aria-labelledby="portfolio-tab">
+                    <div class="row g-4 mb-4">
+                        <!-- Left Column: Manage Holdings -->
+                        <div class="col-lg-5">
+                            <div class="premium-card p-4 h-100 d-flex flex-column">
+                                <h4 class="text-white mb-3"><i class="bi bi-plus-circle text-info me-2"></i> Manage Holdings</h4>
+                                
+                                <form id="portfolio-add-form" class="row g-2 mb-4">
+                                    <div class="col-md-6">
+                                        <input type="text" id="port-ticker-input" class="form-control search-input" placeholder="e.g. TCS, RELIANCE" required autocomplete="off">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="number" id="port-shares-input" class="form-control search-input" placeholder="Shares" required min="1" step="any">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-info w-100"><i class="bi bi-plus"></i></button>
+                                    </div>
+                                </form>
+                                
+                                <div id="port-alert" class="alert alert-danger d-none p-2 mb-3" style="font-size: 0.85rem;"></div>
+                                
+                                <h5 class="text-white mb-2">Asset Weight Allocations</h5>
+                                <div class="table-responsive flex-grow-1 mb-3" style="height: 0; min-height: 200px; overflow-y: auto;">
+                                    <table class="table table-dark table-hover table-borderless mb-0 align-middle">
+                                        <thead>
+                                            <tr class="border-bottom border-secondary" style="font-size: 0.85rem;">
+                                                <th>Ticker</th>
+                                                <th>Shares</th>
+                                                <th>Weight</th>
+                                                <th>Sector</th>
+                                                <th>Beta</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="portfolio-table-body" style="font-size: 0.875rem;">
+                                            <tr class="text-secondary text-center"><td colspan="6" class="py-4">No holdings in portfolio. Add tickers above.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="mt-auto pt-3 border-top border-secondary-subtle d-flex justify-content-between align-items-center">
+                                    <span class="text-secondary" style="font-size: 0.85rem;">Total Weight: <strong class="text-white" id="port-total-weight-lbl">0.0%</strong></span>
+                                    <button class="btn btn-info btn-sm px-4" id="port-btn-analyze" onclick="analyzePortfolio()"><i class="bi bi-pie-chart me-1"></i> Analyze Portfolio</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Results -->
+                        <div class="col-lg-7">
+                            <div class="premium-card p-4 h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h4 class="text-white mb-3"><i class="bi bi-shield-check text-info me-2"></i> Risk & Allocation Profile</h4>
+                                    
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-4">
+                                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                                <div class="metric-title text-secondary mb-1">Portfolio Beta</div>
+                                                <div class="metric-value text-info fs-4 fw-bold" id="val-port-beta">0.00</div>
+                                                <div class="text-secondary mt-1" style="font-size: 0.7rem;">Weighted market risk</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                                <div class="metric-title text-secondary mb-1">Risk Rating</div>
+                                                <div class="metric-value fs-4 fw-bold text-success" id="val-port-risk-level">Low Risk</div>
+                                                <div class="text-secondary mt-1" style="font-size: 0.7rem;">Based on Beta</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                                <div class="metric-title text-secondary mb-1">Diversification Score</div>
+                                                <div class="metric-value text-success fs-4 fw-bold" id="val-port-diversification">0</div>
+                                                <div class="text-secondary mt-1" style="font-size: 0.7rem;">Index out of 100</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 text-center">
+                                            <h5 class="text-white mb-3" style="font-size: 0.95rem;">Sector Allocation</h5>
+                                            <div style="position: relative; height: 200px; width: 100%;">
+                                                <canvas id="portfolio-pie-chart"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h5 class="text-white mb-3" style="font-size: 0.95rem;">Sector Concentration</h5>
+                                            <div class="d-flex flex-column gap-2" id="portfolio-sector-list" style="max-height: 200px; overflow-y: auto; font-size: 0.85rem;">
+                                                <p class="text-secondary text-center py-4">No sectors yet. Add assets and analyze.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Portfolio Insights & Recommendations -->
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle mt-4" id="portfolio-insights-card">
+                                    <h5 class="text-white mb-3" style="font-size: 0.95rem;"><i class="bi bi-lightbulb text-warning me-2"></i>Portfolio Insights & Recommendations</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <h6 class="text-white mb-2" style="font-size: 0.85rem;"><i class="bi bi-pie-chart text-info me-1"></i> Sector Exposures</h6>
+                                            <ul id="portfolio-insights-exposure" class="mb-0 text-secondary ps-3" style="font-size: 0.825rem; line-height: 1.6;">
+                                                <li>No holdings analyzed yet.</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6 border-start border-secondary-subtle">
+                                            <h6 class="text-white mb-2" style="font-size: 0.85rem;"><i class="bi bi-compass text-info me-1"></i> Advisor Guidance</h6>
+                                            <ul id="portfolio-insights-recommendation" class="mb-0 text-secondary ps-3" style="font-size: 0.825rem; line-height: 1.6;">
+                                                <li>Add holdings and click "Analyze Portfolio" to generate guidance.</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Reports -->
+                <div class="tab-pane fade" id="report-content" role="tabpanel" aria-labelledby="report-tab">
+                    <div class="row g-4 mb-4">
+                        <!-- Left: AI Report -->
+                        <div class="col-lg-8">
+                            <div class="premium-card p-4 h-100 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="text-white mb-0"><i class="bi bi-journal-check text-info me-2"></i> AI Consolidated Advisory Report</h3>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-info btn-sm dropdown-toggle" type="button" id="downloadReportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-download me-1"></i> Download Report
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="downloadReportDropdown">
+                                            <li><button class="dropdown-item" type="button" onclick="downloadPdfReport()"><i class="bi bi-file-pdf me-2 text-danger"></i>PDF</button></li>
+                                            <li><button class="dropdown-item" type="button" onclick="downloadReport()"><i class="bi bi-filetype-md me-2 text-info"></i>Markdown</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <hr class="border-secondary-subtle">
+                                <div id="advisory-report-body" class="text-white bg-dark-subtle p-4 border border-secondary-subtle rounded-3 flex-grow-1" style="line-height: 1.7; overflow-y: auto; height: 0; min-height: 400px; font-family: system-ui, -apple-system, sans-serif;">
+                                    <p class="text-secondary text-center py-5">Please search and analyze a stock ticker to generate the advisory report.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: AI Summary + Evolution -->
+                        <div class="col-lg-4 d-flex flex-column gap-4">
+                            <!-- AI Recommendation Summary -->
+                            <div class="premium-card p-4 bg-dark-subtle border-secondary-subtle">
+                                <h4 class="text-white mb-3"><i class="bi bi-stars text-info me-2"></i> AI Recommendation Summary</h4>
+                                <div id="rec-summary-placeholder" class="text-secondary text-center py-4">
+                                    Search for a stock ticker to see the recommendation summary.
+                                </div>
+                                <div id="rec-summary-content" class="d-none">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 border border-secondary-subtle rounded-3 p-3 bg-dark">
+                                        <span class="text-secondary" title="Weighted aggregation framework combining ML Prediction (30%), News Sentiment (30%), and Risk Profile (40%)" style="cursor: help;">Consolidated Score (Weighted Agg)</span>
+                                        <span class="fs-4 fw-bold text-info" id="summary-score">0/100</span>
+                                    </div>
+                                    
+                                    <!-- Score Breakdown Block -->
+                                    <div class="mb-3 border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                        <div class="fw-bold text-white mb-2" style="font-size: 0.85rem;"><i class="bi bi-calculator-fill text-info me-1"></i> Score Breakdown</div>
+                                        <div class="d-flex justify-content-between text-secondary mb-1" style="font-size: 0.8rem;">
+                                            <span>Base Score:</span>
+                                            <span class="text-white">50</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-secondary mb-1" style="font-size: 0.8rem;">
+                                            <span>ML Trend (<span id="breakdown-ml-label" class="text-info">Neutral</span>):</span>
+                                            <span id="breakdown-ml-contrib" class="text-white">+0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-secondary mb-1" style="font-size: 0.8rem;">
+                                            <span>News Sentiment (<span id="breakdown-sent-label" class="text-info">Neutral</span>):</span>
+                                            <span id="breakdown-sent-contrib" class="text-white">+0</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-secondary mb-2" style="font-size: 0.8rem;">
+                                            <span>Risk Profile (<span id="breakdown-risk-label" class="text-info">Medium</span>):</span>
+                                            <span id="breakdown-risk-contrib" class="text-white">+10</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between fw-bold text-white border-top border-secondary-subtle pt-2" style="font-size: 0.85rem;">
+                                            <span>Final Score:</span>
+                                            <span id="breakdown-final-score">50/100</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="fw-bold text-success mb-1" style="font-size: 0.85rem;"><i class="bi bi-plus-circle-fill me-1"></i> Strengths</div>
+                                        <ul id="summary-strengths" class="ps-3 mb-0 text-secondary" style="font-size: 0.825rem; line-height: 1.5;"></ul>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="fw-bold text-danger mb-1" style="font-size: 0.85rem;"><i class="bi bi-exclamation-triangle-fill me-1"></i> Risks</div>
+                                        <ul id="summary-risks" class="ps-3 mb-0 text-secondary" style="font-size: 0.825rem; line-height: 1.5;"></ul>
+                                    </div>
+                                    <div class="pt-2 border-top border-secondary-subtle d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="metric-title text-secondary">Suggested Action</div>
+                                            <div class="fs-5 fw-bold text-white" id="summary-action">N/A</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="metric-title text-secondary">Confidence Level</div>
+                                            <span class="badge bg-secondary-subtle text-light border px-2 py-1 fs-7" id="summary-confidence">N/A</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recommendation Evolution -->
+                            <div class="premium-card p-4">
+                                <h4 class="text-white mb-3"><i class="bi bi-clock-history text-info me-2"></i> Recommendation Evolution</h4>
+                                <div id="evolution-placeholder" class="text-secondary text-center py-4">
+                                    Search for a stock ticker to see history.
+                                </div>
+                                <div id="evolution-content" class="d-none">
+                                    <div style="position: relative; height: 160px; width: 100%;" class="mb-3">
+                                        <canvas id="evolution-chart"></canvas>
+                                    </div>
+                                    <div class="evolution-timeline-container" style="max-height: 160px; overflow-y: auto;">
+                                        <div class="evolution-timeline" id="evolution-timeline-body">
+                                            <!-- Vertical timeline items -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: History & Comparison -->
+                    <div class="row g-4">
+                        <!-- Previous Analyses Sidebar -->
+                        <div class="col-lg-3">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="text-white mb-3"><i class="bi bi-list-stars text-info me-2"></i> Previous Analyses</h4>
+                                <div class="list-group list-group-flush overflow-y-auto" style="max-height: 340px;" id="previous-analyses-list">
+                                    <div class="text-secondary text-center py-4">No analysis history found.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recommendation Comparison Table -->
+                        <div class="col-lg-9">
+                            <div class="premium-card p-4 h-100">
+                                <h4 class="text-white mb-3"><i class="bi bi-table text-info me-2"></i> Recommendation Comparison</h4>
+                                <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+                                    <table class="table table-dark table-hover table-borderless mb-0 align-middle">
+                                        <thead>
+                                            <tr class="border-bottom border-secondary" style="font-size: 0.85rem;">
+                                                <th>Ticker</th>
+                                                <th>Company Name</th>
+                                                <th>Date & Time</th>
+                                                <th>Action</th>
+                                                <th>ML Prediction</th>
+                                                <th>Risk Profile</th>
+                                                <th>Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="comparison-table-body" style="font-size: 0.875rem;">
+                                            <tr class="text-secondary text-center"><td colspan="7" class="py-4">No records to compare. Run searches above.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End Tab Content -->
+
+        </div> <!-- End Dashboard Layout -->
+
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        let stockChart = null;
+        let currentTicker = null;
+        let lastChartData = null;
+        let lastPortfolioData = null;
+        let evolutionChart = null;
+
+        function toggleDescription() {
+            const summary = document.getElementById('stock-summary');
+            const btn = document.getElementById('description-toggle-btn');
+            if (summary.classList.contains('line-clamp-3')) {
+                summary.classList.remove('line-clamp-3');
+                btn.innerText = '[Read Less]';
+            } else {
+                summary.classList.add('line-clamp-3');
+                btn.innerText = '[Read More]';
+            }
+        }
+
+        function formatMarketCapLakhCrore(marketCapValue) {
+            if (!marketCapValue) return "N/A";
+            const capInCrs = marketCapValue / 10000000;
+            if (capInCrs >= 100000) {
+                const capInLakhCrs = capInCrs / 100000;
+                return `₹${capInLakhCrs.toFixed(2)}L Cr`;
+            }
+            return `₹${formatNumber(capInCrs, 2)} Cr`;
+        }
+
+        function toggleChevron(id) {
+            const chevron = document.getElementById(id);
+            if (chevron.classList.contains('bi-chevron-down')) {
+                chevron.classList.remove('bi-chevron-down');
+                chevron.classList.add('bi-chevron-up');
+            } else {
+                chevron.classList.remove('bi-chevron-up');
+                chevron.classList.add('bi-chevron-down');
+            }
+        }
+
+        function loadRecentAnalyses() {
+            const listEl = document.getElementById('previous-analyses-list');
+            const tableBody = document.getElementById('comparison-table-body');
+            
+            fetch('/api/analyses/recent')
+                .then(res => res.json())
+                .then(data => {
+                    listEl.innerHTML = '';
+                    tableBody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        listEl.innerHTML = '<div class="text-secondary text-center py-4">No analysis history found.</div>';
+                        tableBody.innerHTML = '<tr class="text-secondary text-center"><td colspan="7" class="py-4">No records to compare. Run searches above.</td></tr>';
+                        return;
+                    }
+                    
+                    // Populate Previous Analyses Sidebar
+                    data.forEach(item => {
+                        const btn = document.createElement('button');
+                        btn.className = 'list-group-item list-group-item-action bg-transparent text-secondary border-secondary-subtle py-2 px-1 text-start d-flex justify-content-between align-items-center';
+                        btn.style.fontSize = '0.85rem';
+                        btn.onclick = () => prefillTicker(item.ticker);
+                        
+                        const dateObj = new Date(item.timestamp);
+                        const dateStr = dateObj.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+                        
+                        let badgeClass = 'bg-secondary';
+                        if (item.recommendation === 'Buy' || item.recommendation === 'Accumulate on Dips') badgeClass = 'bg-success';
+                        else if (item.recommendation === 'Sell') badgeClass = 'bg-danger';
+                        
+                        btn.innerHTML = `
+                            <div>
+                                <strong class="text-white">${item.ticker}</strong>
+                                <div style="font-size: 0.7rem;" class="text-secondary">${dateStr}</div>
+                            </div>
+                            <span class="badge ${badgeClass} text-dark fw-bold fs-7">${item.recommendation || 'Hold'}</span>
+                        `;
+                        listEl.appendChild(btn);
+                    });
+                    
+                    // Populate Comparison Grid Table
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        
+                        const dateObj = new Date(item.timestamp);
+                        const dateStr = dateObj.toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' });
+                        
+                        let badgeClass = 'bg-secondary-subtle text-secondary-emphasis';
+                        if (item.recommendation === 'Buy' || item.recommendation === 'Accumulate on Dips') badgeClass = 'bg-success-subtle text-success';
+                        else if (item.recommendation === 'Sell') badgeClass = 'bg-danger-subtle text-danger';
+                        
+                        let mlClass = 'text-warning';
+                        if (item.ml_prediction === 'Bullish') mlClass = 'text-success';
+                        else if (item.ml_prediction === 'Bearish') mlClass = 'text-danger';
+                        
+                        let scoreClass = 'text-info';
+                        if (item.investment_score >= 75) scoreClass = 'text-success';
+                        else if (item.investment_score < 45) scoreClass = 'text-danger';
+                        
+                        row.innerHTML = `
+                            <td class="fw-bold text-info"><span class="cursor-pointer" onclick="prefillTicker('${item.ticker}')">${item.ticker}</span></td>
+                            <td class="text-white">${item.company_name || 'N/A'}</td>
+                            <td class="text-secondary" style="font-size: 0.8rem;">${dateStr}</td>
+                            <td><span class="badge ${badgeClass} border border-secondary px-2 py-1 fs-8">${item.recommendation || 'Hold'}</span></td>
+                            <td><span class="fw-bold ${mlClass}">${item.ml_prediction || 'Neutral'}</span></td>
+                            <td class="text-secondary">${item.risk_metrics?.risk_level || 'Medium'}</td>
+                            <td><span class="fw-bold ${scoreClass}">${item.investment_score || 50}/100</span></td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error loading recent analyses:", err);
+                    listEl.innerHTML = '<div class="text-danger text-center py-4">Error loading history.</div>';
+                    tableBody.innerHTML = '<tr class="text-danger text-center"><td colspan="7" class="py-4">Error loading comparison data.</td></tr>';
+                });
+        }
+
+        function loadTickerEvolution(ticker) {
+            const summaryPlaceholder = document.getElementById('rec-summary-placeholder');
+            const summaryContent = document.getElementById('rec-summary-content');
+            const evolutionPlaceholder = document.getElementById('evolution-placeholder');
+            const evolutionContent = document.getElementById('evolution-content');
+            const timelineBody = document.getElementById('evolution-timeline-body');
+            
+            fetch(`/api/analyses/history/${ticker}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        summaryPlaceholder.classList.remove('d-none');
+                        summaryContent.classList.add('d-none');
+                        evolutionPlaceholder.classList.remove('d-none');
+                        evolutionContent.classList.add('d-none');
+                        return;
+                    }
+                    
+                    // Show content containers
+                    summaryPlaceholder.classList.add('d-none');
+                    summaryContent.classList.remove('d-none');
+                    evolutionPlaceholder.classList.add('d-none');
+                    evolutionContent.classList.remove('d-none');
+                    
+                    // Get latest item for the Recommendation Summary
+                    const latest = data[data.length - 1];
+                    document.getElementById('summary-score').innerText = `${latest.investment_score}/100`;
+                    
+                    const score = latest.investment_score || 50;
+                    const scoreEl = document.getElementById('summary-score');
+                    scoreEl.className = 'fs-4 fw-bold';
+                    if (score >= 75) scoreEl.className = 'fs-4 fw-bold text-success';
+                    else if (score < 45) scoreEl.className = 'fs-4 fw-bold text-danger';
+                    else scoreEl.className = 'fs-4 fw-bold text-info';
+                    
+                    // Populate Score Breakdown
+                    const mlLabel = latest.ml_prediction || "Neutral";
+                    let mlContrib = 0;
+                    if (mlLabel === "Bullish") mlContrib = 15;
+                    else if (mlLabel === "Bearish") mlContrib = -15;
+                    
+                    const sentLabel = latest.sentiment?.label || "Neutral";
+                    let sentContrib = 0;
+                    if (sentLabel === "Positive") sentContrib = 15;
+                    else if (sentLabel === "Negative") sentContrib = -15;
+                    
+                    const riskLabel = latest.risk_metrics?.risk_level || "Medium";
+                    let riskContrib = 10;
+                    if (riskLabel === "Low") riskContrib = 20;
+                    else if (riskLabel === "High") riskContrib = -10;
+                    
+                    document.getElementById('breakdown-ml-label').innerText = mlLabel;
+                    document.getElementById('breakdown-ml-contrib').innerText = mlContrib >= 0 ? `+${mlContrib}` : `${mlContrib}`;
+                    document.getElementById('breakdown-ml-contrib').className = mlContrib > 0 ? "text-success" : (mlContrib < 0 ? "text-danger" : "text-white");
+                    
+                    document.getElementById('breakdown-sent-label').innerText = sentLabel;
+                    document.getElementById('breakdown-sent-contrib').innerText = sentContrib >= 0 ? `+${sentContrib}` : `${sentContrib}`;
+                    document.getElementById('breakdown-sent-contrib').className = sentContrib > 0 ? "text-success" : (sentContrib < 0 ? "text-danger" : "text-white");
+                    
+                    document.getElementById('breakdown-risk-label').innerText = riskLabel;
+                    document.getElementById('breakdown-risk-contrib').innerText = riskContrib >= 0 ? `+${riskContrib}` : `${riskContrib}`;
+                    document.getElementById('breakdown-risk-contrib').className = riskContrib > 0 ? "text-success" : (riskContrib < 0 ? "text-danger" : "text-white");
+                    
+                    document.getElementById('breakdown-final-score').innerText = `${score}/100`;
+                    
+                    // Populate Confidence Level badge
+                    const maxProb = latest.ml_confidence || 0.0;
+                    const probVal = maxProb <= 1.0 ? maxProb * 100 : maxProb;
+                    
+                    let confidence = "N/A";
+                    let confClass = "bg-secondary-subtle text-light border border-secondary";
+                    if (probVal > 0) {
+                        if (probVal < 45) {
+                            confidence = "Low";
+                            confClass = "bg-danger-subtle text-danger border border-danger";
+                        } else if (probVal <= 60) {
+                            confidence = "Medium";
+                            confClass = "bg-warning-subtle text-warning border border-warning";
+                        } else {
+                            confidence = "High";
+                            confClass = "bg-success-subtle text-success border border-success";
+                        }
+                    }
+                    const confEl = document.getElementById('summary-confidence');
+                    confEl.innerText = confidence;
+                    confEl.className = `badge px-2 py-1 fs-7 ${confClass}`;
+
+                    document.getElementById('summary-action').innerText = latest.recommendation || 'Hold';
+                    const actionEl = document.getElementById('summary-action');
+                    actionEl.className = 'fs-5 fw-bold';
+                    if (latest.recommendation === 'Buy' || latest.recommendation === 'Accumulate on Dips') actionEl.className = 'fs-5 fw-bold text-success';
+                    else if (latest.recommendation === 'Sell') actionEl.className = 'fs-5 fw-bold text-danger';
+                    else actionEl.className = 'fs-5 fw-bold text-white';
+                    
+                    // Build Strengths & Risks dynamically
+                    const strengthsEl = document.getElementById('summary-strengths');
+                    const risksEl = document.getElementById('summary-risks');
+                    strengthsEl.innerHTML = '';
+                    risksEl.innerHTML = '';
+                    
+                    let strengths = [];
+                    let risks = [];
+                    
+                    // Evaluate News Sentiment
+                    if (latest.sentiment?.label === 'Positive') {
+                        strengths.push('Positive news and media sentiment');
+                    } else if (latest.sentiment?.label === 'Negative') {
+                        risks.push('Negative news headlines tone');
+                    }
+                    
+                    // Evaluate ML prediction
+                    if (latest.ml_prediction === 'Bullish') {
+                        strengths.push('Bullish 30-day price trend predicted by XGBoost');
+                    } else if (latest.ml_prediction === 'Bearish') {
+                        risks.push('Bearish 30-day price trend predicted by XGBoost');
+                    }
+                    
+                    // Evaluate Risk Metrics
+                    if (latest.risk_metrics?.beta < 0.8) {
+                        strengths.push(`Low volatility risk (Beta: ${latest.risk_metrics.beta.toFixed(2)})`);
+                    } else if (latest.risk_metrics?.beta > 1.25) {
+                        risks.push(`High market sensitivity (Beta: ${latest.risk_metrics.beta.toFixed(2)})`);
+                    }
+                    if (latest.risk_metrics?.sharpe_ratio > 1.0) {
+                        strengths.push(`Excellent risk-adjusted returns (Sharpe: ${latest.risk_metrics.sharpe_ratio.toFixed(2)})`);
+                    } else if (latest.risk_metrics?.sharpe_ratio < 0.0) {
+                        risks.push(`Poor historical risk-adjusted returns (Sharpe: ${latest.risk_metrics.sharpe_ratio.toFixed(2)})`);
+                    }
+                    
+                    // Evaluate Financials
+                    if (latest.financials?.pe_ratio && latest.financials.pe_ratio < 20) {
+                        strengths.push(`Attractive valuation (P/E of ${latest.financials.pe_ratio.toFixed(1)})`);
+                    } else if (latest.financials?.pe_ratio && latest.financials.pe_ratio > 45) {
+                        risks.push(`Premium valuation multiplier (P/E of ${latest.financials.pe_ratio.toFixed(1)})`);
+                    }
+                    if (latest.financials?.debt_to_equity && latest.financials.debt_to_equity > 1.5) {
+                        risks.push(`High leverage risk (Debt/Equity of ${latest.financials.debt_to_equity.toFixed(1)})`);
+                    } else if (latest.financials?.debt_to_equity && latest.financials.debt_to_equity < 0.5) {
+                        strengths.push(`Healthy balance sheet (Debt/Equity of ${latest.financials.debt_to_equity.toFixed(1)})`);
+                    }
+                    
+                    // Add defaults if empty
+                    if (strengths.length === 0) strengths.push('Core financial metrics are stable.');
+                    if (risks.length === 0) risks.push('No critical short-term risk factors identified.');
+                    
+                    strengths.forEach(s => {
+                        const li = document.createElement('li');
+                        li.innerText = s;
+                        strengthsEl.appendChild(li);
+                    });
+                    
+                    risks.forEach(r => {
+                        const li = document.createElement('li');
+                        li.innerText = r;
+                        risksEl.appendChild(li);
+                    });
+                    
+                    // Render Chart.js history
+                    const dates = [];
+                    const scores = [];
+                    const recommendations = [];
+                    const mlPredictions = [];
+                    
+                    data.forEach(item => {
+                        const d = new Date(item.timestamp);
+                        dates.push(d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }));
+                        scores.push(item.investment_score || 50);
+                        recommendations.push(item.recommendation || 'Hold');
+                        mlPredictions.push(item.ml_prediction || 'Neutral');
+                    });
+                    
+                    drawEvolutionChart(dates, scores, recommendations, mlPredictions);
+                    
+                    // Render Timeline list
+                    timelineBody.innerHTML = '';
+                    // Display in reverse order (newest first) for clean reading
+                    const revData = [...data].reverse();
+                    revData.forEach(item => {
+                        const timeItem = document.createElement('div');
+                        timeItem.className = 'timeline-item';
+                        
+                        const dateObj = new Date(item.timestamp);
+                        const dateStr = dateObj.toLocaleDateString('en-IN', { month: 'short', year: 'numeric', day: 'numeric' });
+                        
+                        let textClass = 'text-info';
+                        if (item.recommendation === 'Buy' || item.recommendation === 'Accumulate on Dips') textClass = 'text-success';
+                        else if (item.recommendation === 'Sell') textClass = 'text-danger';
+                        
+                        timeItem.innerHTML = `
+                            <div class="timeline-badge"></div>
+                            <div class="timeline-content">
+                                <div class="fw-bold" style="font-size: 0.8rem;">${dateStr}</div>
+                                <div class="fs-8 text-secondary">
+                                    Score: <strong class="text-white">${item.investment_score || 50}</strong> | 
+                                    Rec: <strong class="${textClass}">${item.recommendation || 'Hold'}</strong>
+                                </div>
+                            </div>
+                        `;
+                        timelineBody.appendChild(timeItem);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error loading ticker evolution:", err);
+                    summaryPlaceholder.classList.remove('d-none');
+                    summaryContent.classList.add('d-none');
+                    evolutionPlaceholder.classList.remove('d-none');
+                    evolutionContent.classList.add('d-none');
+                });
+        }
+        
+        function drawEvolutionChart(labels, values, recommendations = [], mlPredictions = []) {
+            const ctx = document.getElementById('evolution-chart').getContext('2d');
+            if (evolutionChart) {
+                evolutionChart.destroy();
+            }
+            
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#3b82f6';
+            const textSecondary = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#94a3b8';
+            const borderSubtle = getComputedStyle(document.documentElement).getPropertyValue('--border-subtle').trim() || 'rgba(255, 255, 255, 0.05)';
+            const bgCard = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#1c1f26';
+            const textPrimary = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#f3f4f6';
+            
+            evolutionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Investment Score',
+                        data: values,
+                        borderColor: primaryColor,
+                        borderWidth: 2,
+                        backgroundColor: hexToRgbA(primaryColor, 0.1),
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 3,
+                        pointBackgroundColor: primaryColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: bgCard,
+                            titleColor: textPrimary,
+                            bodyColor: textSecondary,
+                            borderColor: borderSubtle,
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    const rec = recommendations[index] || 'N/A';
+                                    const mlPred = mlPredictions[index] || 'N/A';
+                                    return [
+                                        `Score: ${context.parsed.y}/100`,
+                                        `Recommendation: ${rec}`,
+                                        `ML Prediction: ${mlPred}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textSecondary, font: { size: 9 } }
+                        },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            grid: { color: borderSubtle },
+                            ticks: { color: textSecondary, font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Theme switching logic
+        function updateThemeUI(theme) {
+            const icon = document.getElementById('theme-toggle-icon');
+            if (theme === 'light') {
+                icon.className = 'bi bi-moon';
+            } else {
+                icon.className = 'bi bi-sun';
+            }
+        }
+        
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+            
+            // Re-render charts with the new theme colors
+            if (stockChart && lastChartData) {
+                drawChart(lastChartData.dates, lastChartData.closes);
+            }
+            if (portfolioChart && lastPortfolioData) {
+                drawPortfolioPieChart(lastPortfolioData.labels, lastPortfolioData.values);
+            }
+            if (backtestChartInstance && lastBacktestData) {
+                drawBacktestChart(lastBacktestData);
+            }
+        }
+
+        // Color converter to inject alpha into hex codes from CSS variables
+        function hexToRgbA(hex, alpha) {
+            let c;
+            if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+                c = hex.substring(1).split('');
+                if (c.length === 3) {
+                    c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+                }
+                c = '0x' + c.join('');
+                return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',' + alpha + ')';
+            }
+            return hex;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            updateThemeUI(currentTheme);
+            
+            const themeBtn = document.getElementById('theme-toggle');
+            if (themeBtn) {
+                themeBtn.addEventListener('click', toggleTheme);
+            }
+        });
+
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const ticker = document.getElementById('ticker-input').value.trim();
+            if (ticker) {
+                analyzeStock(ticker);
+            }
+        });
+
+        // RAG PDF Report Upload Listener
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('pdf-file-input');
+            const statusDiv = document.getElementById('upload-status');
+            const spinner = document.getElementById('upload-spinner');
+            const icon = document.getElementById('upload-icon');
+            const btn = document.getElementById('upload-btn');
+            
+            if (!currentTicker) {
+                statusDiv.className = "text-danger mt-2";
+                statusDiv.innerText = "Please select and analyze a stock ticker first.";
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Set loading state
+            spinner.classList.remove('d-none');
+            icon.classList.add('d-none');
+            btn.setAttribute('disabled', 'true');
+            statusDiv.className = "text-warning mt-2";
+            statusDiv.innerHTML = `<i class="spinner-border spinner-border-sm me-1" style="width: 1rem; height: 1rem;"></i> Parsing and indexing PDF (takes 10-30s depending on size)...`;
+            
+            fetch(`/api/rag/upload/${currentTicker}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    statusDiv.className = "text-success mt-2";
+                    statusDiv.innerHTML = `<i class="bi bi-check-circle-fill me-1"></i> Success! Indexed ${data.chunks_indexed} character chunks from ${data.pages_processed} pages.`;
+                    
+                    // Re-run stock analysis to automatically generate RAG summary report
+                    analyzeStock(currentTicker);
+                } else {
+                    statusDiv.className = "text-danger mt-2";
+                    statusDiv.innerText = data.error || "Failed to process PDF.";
+                }
+            })
+            .catch(err => {
+                statusDiv.className = "text-danger mt-2";
+                statusDiv.innerText = "Upload failed. Server error occurred.";
+                console.error(err);
+            })
+            .finally(() => {
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                btn.removeAttribute('disabled');
+            });
+        });
+
+        // Chat mode variable (Step 10)
+        let chatMode = 'rag';
+        let portfolioChart = null;
+        let backtestChartInstance = null;
+        let lastBacktestData = null;
+        let lastReportMarkdown = "";
+        
+        function toggleChatMode(mode) {
+            chatMode = mode;
+            const messagesDiv = document.getElementById('chat-messages');
+            const input = document.getElementById('chat-input');
+            const btn = document.getElementById('chat-btn');
+            
+            messagesDiv.innerHTML = '';
+            
+            if (chatMode === 'rag') {
+                input.placeholder = "Ask a question about the reports...";
+                const placeholder = document.createElement('div');
+                placeholder.id = 'chat-placeholder';
+                placeholder.className = 'text-secondary text-center py-5';
+                placeholder.innerHTML = `Upload a corporate report PDF on the left, then ask questions like: <br>
+                    <em style="font-size: 0.85rem;">"What was the revenue growth rate?"</em> or <br>
+                    <em style="font-size: 0.85rem;">"List the core business risks mentioned."</em>`;
+                messagesDiv.appendChild(placeholder);
+                
+                // Let the RAG status dictate if the chat inputs are enabled
+                const ragAvailable = document.getElementById('chat-input').getAttribute('data-rag-active') === "true";
+                if (ragAvailable) {
+                    input.removeAttribute('disabled');
+                    btn.removeAttribute('disabled');
+                } else {
+                    input.setAttribute('disabled', 'true');
+                    btn.setAttribute('disabled', 'true');
+                }
+            } else {
+                input.placeholder = "Ask the Advisor Copilot anything about the stock...";
+                const placeholder = document.createElement('div');
+                placeholder.id = 'chat-placeholder';
+                placeholder.className = 'text-secondary text-center py-5';
+                placeholder.innerHTML = `Ask the Advisor Copilot anything about the stock's financials, sentiment, risk profile, or predictions: <br>
+                    <em style="font-size: 0.85rem;">"Why is the XGBoost prediction Bullish/Bearish?"</em> or <br>
+                    <em style="font-size: 0.85rem;">"What are the major risk factors for this stock?"</em>`;
+                messagesDiv.appendChild(placeholder);
+                
+                // Enable if a stock is currently selected
+                if (currentTicker) {
+                    input.removeAttribute('disabled');
+                    btn.removeAttribute('disabled');
+                } else {
+                    input.setAttribute('disabled', 'true');
+                    btn.setAttribute('disabled', 'true');
+                }
+            }
+        }
+
+        // Chat Form Submission Listener (RAG / Advisor Copilot)
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const query = input.value.trim();
+            const messagesDiv = document.getElementById('chat-messages');
+            const spinner = document.getElementById('chat-spinner');
+            const btn = document.getElementById('chat-btn');
+            
+            if (!query || !currentTicker) return;
+            
+            // Remove placeholder if present
+            const placeholder = document.getElementById('chat-placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
+            // Append user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'align-self-end bg-info text-dark rounded-3 px-3 py-2 my-1'
+            userMsg.style.maxWidth = '90%';
+            userMsg.innerHTML = `<strong>You:</strong> ${query}`;
+            messagesDiv.appendChild(userMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Clear input & disable form
+            input.value = '';
+            input.setAttribute('disabled', 'true');
+            btn.setAttribute('disabled', 'true');
+            spinner.classList.remove('d-none');
+            
+            const url = chatMode === 'rag' ? `/api/rag/chat/${currentTicker}` : `/api/copilot/chat/${currentTicker}`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: query })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'align-self-start bg-dark-subtle border border-secondary-subtle rounded-3 px-3 py-2 my-1';
+                botMsg.style.maxWidth = '95%';
+                
+                if (data.success) {
+                    let ans = data.answer.replace(/\n/g, '<br>');
+                    // Add citations if available (only in RAG mode)
+                    let citationStr = "";
+                    if (chatMode === 'rag' && data.sources && data.sources.length > 0) {
+                        citationStr = `<div class="mt-2 pt-2 border-top border-secondary-subtle text-secondary" style="font-size: 0.75rem;"><i class="bi bi-bookmark-fill me-1"></i> Citations: ` + 
+                            data.sources.map(s => `[${s.source}, Page ${s.page}]`).join(', ') + 
+                            `</div>`;
+                    }
+                    botMsg.innerHTML = `<strong>AI Assistant:</strong><br>${ans}${citationStr}`;
+                } else {
+                    botMsg.innerHTML = `<strong class="text-danger">Error:</strong> Failed to fetch answer. ${data.error || ''}`;
+                }
+                messagesDiv.appendChild(botMsg);
+            })
+            .catch(err => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'align-self-start bg-danger-subtle text-danger rounded-3 px-3 py-2 my-1';
+                botMsg.style.maxWidth = '95%';
+                botMsg.innerHTML = `<strong>System Error:</strong> Connection failed.`;
+                messagesDiv.appendChild(botMsg);
+                console.error(err);
+            })
+            .finally(() => {
+                input.removeAttribute('disabled');
+                btn.removeAttribute('disabled');
+                spinner.classList.add('d-none');
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+        });
+
+        function prefillTicker(ticker) {
+            document.getElementById('ticker-input').value = ticker;
+            analyzeStock(ticker);
+        }
+
+        function analyzeStock(ticker) {
+            // Set UI to loading state
+            document.getElementById('btn-spinner').classList.remove('d-none');
+            document.getElementById('btn-icon').classList.add('d-none');
+            document.getElementById('search-btn').setAttribute('disabled', 'true');
+            document.getElementById('error-alert').classList.add('d-none');
+
+            fetch(`/api/stock/${ticker}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderDashboard(data);
+                    } else {
+                        showError(data.error || "Failed to analyze stock.");
+                    }
+                })
+                .catch(err => {
+                    showError("Connection failed or server error occurred.");
+                    console.error(err);
+                })
+                .finally(() => {
+                    // Reset UI loading state
+                    document.getElementById('btn-spinner').classList.add('d-none');
+                    document.getElementById('btn-icon').classList.remove('d-none');
+                    document.getElementById('search-btn').removeAttribute('disabled');
+                });
+        }
+
+        function showError(msg) {
+            document.getElementById('error-message').innerText = msg;
+            document.getElementById('error-alert').classList.remove('d-none');
+            // Ensure layout remains hidden on error if welcome is visible
+            if (document.getElementById('dashboard-layout').classList.contains('d-none')) {
+                document.getElementById('welcome-panel').classList.remove('d-none');
+            }
+        }
+
+        function formatNumber(num, decimals = 2) {
+            if (num === null || num === undefined) return "N/A";
+            return num.toLocaleString('en-IN', { maximumFractionDigits: decimals });
+        }
+
+        function renderDashboard(data) {
+            // Hide welcome panel, show layout
+            document.getElementById('welcome-panel').classList.add('d-none');
+            document.getElementById('dashboard-layout').classList.remove('d-none');
+
+            // Set stock details
+            document.getElementById('stock-ticker-badge').innerText = data.ticker;
+            document.getElementById('company-name').innerText = data.company_name;
+            document.getElementById('stock-sector').innerText = data.financials.sector || "N/A";
+            document.getElementById('stock-industry').innerText = data.financials.industry || "N/A";
+            
+            const currency = data.financials.currency === "INR" ? "₹" : "$";
+            document.getElementById('stock-price').innerText = `${currency} ${formatNumber(data.financials.current_price)}`;
+            
+            // Truncated summary and toggle button logic
+            const summaryText = data.financials.summary || "";
+            const summaryEl = document.getElementById('stock-summary');
+            const toggleBtn = document.getElementById('description-toggle-btn');
+            summaryEl.innerText = summaryText;
+            summaryEl.classList.add('line-clamp-3');
+            toggleBtn.innerText = '[Read More]';
+            if (summaryText.length > 220) {
+                toggleBtn.style.display = 'inline-block';
+            } else {
+                toggleBtn.style.display = 'none';
+            }
+
+            // Format Market Cap in Lakh Crores
+            const rawMarketCap = data.financials.market_cap;
+            document.getElementById('stock-market-cap').innerText = formatMarketCapLakhCrore(rawMarketCap);
+
+            // Load Evolution History chart
+            loadTickerEvolution(data.ticker);
+
+            // Set financials
+            const mCapInCrs = rawMarketCap ? (rawMarketCap / 10000000).toFixed(2) : null;
+            document.getElementById('val-market-cap').innerText = mCapInCrs ? `₹ ${formatNumber(parseFloat(mCapInCrs))} Cr` : "N/A";
+            document.getElementById('val-pe').innerText = data.financials.pe_ratio ? formatNumber(data.financials.pe_ratio, 2) : "N/A";
+            document.getElementById('val-eps').innerText = data.financials.eps ? `₹ ${formatNumber(data.financials.eps, 2)}` : "N/A";
+            document.getElementById('val-debt-equity').innerText = data.financials.debt_to_equity ? formatNumber(data.financials.debt_to_equity, 2) : "N/A";
+
+            // Set risk metrics
+            const metrics = data.risk_metrics;
+            document.getElementById('val-volatility').innerText = `${(metrics.annualized_volatility * 100).toFixed(2)}%`;
+            document.getElementById('val-beta').innerText = metrics.beta.toFixed(3);
+            document.getElementById('val-sharpe').innerText = metrics.sharpe_ratio.toFixed(3);
+            
+            const riskLvlEl = document.getElementById('val-risk-level');
+            riskLvlEl.innerText = metrics.risk_level;
+            
+            // Adjust risk level styling
+            riskLvlEl.className = "metric-value";
+            if (metrics.risk_level === "Low") {
+                riskLvlEl.classList.add("text-success");
+            } else if (metrics.risk_level === "High") {
+                riskLvlEl.classList.add("text-danger");
+            } else {
+                riskLvlEl.classList.add("text-warning");
+            }
+
+            // Set sentiment metrics
+            const sentiment = data.sentiment;
+            document.getElementById('val-sentiment-label').innerText = sentiment.label;
+            document.getElementById('val-sentiment-score').innerText = `Score: ${sentiment.score.toFixed(3)}`;
+            
+            // Set sentiment label coloring
+            const sentLabelEl = document.getElementById('val-sentiment-label');
+            sentLabelEl.className = "metric-value";
+            if (sentiment.label === "Positive") {
+                sentLabelEl.classList.add("text-success");
+            } else if (sentiment.label === "Negative") {
+                sentLabelEl.classList.add("text-danger");
+            } else {
+                sentLabelEl.classList.add("text-secondary");
+            }
+            
+            // Set progress bars width
+            document.getElementById('pb-sentiment-pos').style.width = `${sentiment.positive_pct}%`;
+            document.getElementById('pb-sentiment-neu').style.width = `${sentiment.neutral_pct}%`;
+            document.getElementById('pb-sentiment-neg').style.width = `${sentiment.negative_pct}%`;
+            
+            // Set progress bar text labels
+            document.getElementById('lbl-sentiment-pos').innerText = `${sentiment.positive_pct}%`;
+            document.getElementById('lbl-sentiment-neu').innerText = `${sentiment.neutral_pct}%`;
+            document.getElementById('lbl-sentiment-neg').innerText = `${sentiment.negative_pct}%`;
+
+            // Set ML predictions
+            const ml = data.ml_prediction;
+            if (ml && !ml.error) {
+                document.getElementById('val-ml-prediction').innerText = ml.prediction;
+                
+                // Adjust prediction label styling
+                const mlPredictionEl = document.getElementById('val-ml-prediction');
+                mlPredictionEl.className = "metric-value";
+                if (ml.prediction === "Bullish") {
+                    mlPredictionEl.className = "metric-value text-success";
+                } else if (ml.prediction === "Bearish") {
+                    mlPredictionEl.className = "metric-value text-danger";
+                } else {
+                    mlPredictionEl.className = "metric-value text-warning";
+                }
+                
+                // Set probability bars and labels
+                const pBullish = Math.round(ml.probabilities.Bullish * 100);
+                const pNeutral = Math.round(ml.probabilities.Neutral * 100);
+                const pBearish = Math.round(ml.probabilities.Bearish * 100);
+                
+                document.getElementById('lbl-prob-bullish').innerText = `${pBullish}%`;
+                document.getElementById('lbl-prob-neutral').innerText = `${pNeutral}%`;
+                document.getElementById('lbl-prob-bearish').innerText = `${pBearish}%`;
+                
+                document.getElementById('pb-prob-bullish').style.width = `${pBullish}%`;
+                document.getElementById('pb-prob-neutral').style.width = `${pNeutral}%`;
+                document.getElementById('pb-prob-bearish').style.width = `${pBearish}%`;
+                
+                // Populate SHAP Drivers
+                const posDriversEl = document.getElementById('shap-pos-drivers');
+                const negDriversEl = document.getElementById('shap-neg-drivers');
+                const posHeaderEl = document.getElementById('shap-pos-header');
+                const negHeaderEl = document.getElementById('shap-neg-header');
+                
+                // Update SHAP headers dynamically based on prediction
+                if (ml.prediction === "Bullish") {
+                    posHeaderEl.innerHTML = '<i class="bi bi-plus-circle-fill me-1"></i> Bullish Support Signals';
+                    negHeaderEl.innerHTML = '<i class="bi bi-dash-circle-fill me-1"></i> Bearish Drag Signals';
+                } else if (ml.prediction === "Bearish") {
+                    posHeaderEl.innerHTML = '<i class="bi bi-plus-circle-fill me-1"></i> Bearish Support Signals';
+                    negHeaderEl.innerHTML = '<i class="bi bi-dash-circle-fill me-1"></i> Bullish Drag Signals';
+                } else {
+                    posHeaderEl.innerHTML = '<i class="bi bi-plus-circle-fill me-1"></i> Top Positive Drivers';
+                    negHeaderEl.innerHTML = '<i class="bi bi-dash-circle-fill me-1"></i> Top Negative Drivers';
+                }
+                
+                posDriversEl.innerHTML = '<li class="text-secondary">No positive drivers</li>';
+                negDriversEl.innerHTML = '<li class="text-secondary">No negative drivers</li>';
+                
+                if (ml.shap_values && ml.shap_values.length > 0) {
+                    let posHtml = '';
+                    let negHtml = '';
+                    ml.shap_values.forEach(item => {
+                        const valStr = item.shap_value > 0 ? `+${item.shap_value.toFixed(4)}` : item.shap_value.toFixed(4);
+                        const bullet = `<li><strong>${item.description}</strong> <span class="text-muted" style="font-size: 0.75rem;">(${valStr})</span></li>`;
+                        if (item.shap_value > 0) {
+                            posHtml += bullet;
+                        } else if (item.shap_value < 0) {
+                            negHtml += bullet;
+                        }
+                    });
+                    if (posHtml) posDriversEl.innerHTML = posHtml;
+                    if (negHtml) negDriversEl.innerHTML = negHtml;
+                }
+            } else {
+                document.getElementById('val-ml-prediction').innerText = "N/A";
+                document.getElementById('lbl-prob-bullish').innerText = "0%";
+                document.getElementById('lbl-prob-neutral').innerText = "0%";
+                document.getElementById('lbl-prob-bearish').innerText = "0%";
+                document.getElementById('pb-prob-bullish').style.width = "0%";
+                document.getElementById('pb-prob-neutral').style.width = "0%";
+                document.getElementById('pb-prob-bearish').style.width = "0%";
+                document.getElementById('shap-pos-drivers').innerHTML = `<li class="text-danger">${ml && ml.error ? ml.error : "Model prediction not available."}</li>`;
+                document.getElementById('shap-neg-drivers').innerHTML = '<li>N/A</li>';
+            }
+
+            // Set RAG Audit summary & activate chat
+            currentTicker = data.ticker;
+            const rag = data.rag_data;
+            const chatInput = document.getElementById('chat-input');
+            const chatBtn = document.getElementById('chat-btn');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatPlaceholder = document.getElementById('chat-placeholder');
+            
+            if (rag && rag.available) {
+                document.getElementById('val-rag-summary').innerText = rag.summary;
+                chatInput.setAttribute('data-rag-active', 'true');
+                if (chatMode === 'rag') {
+                    chatInput.removeAttribute('disabled');
+                    chatBtn.removeAttribute('disabled');
+                    if (chatPlaceholder) chatPlaceholder.classList.add('d-none');
+                }
+            } else {
+                document.getElementById('val-rag-summary').innerHTML = `<span class="text-secondary"><i class="bi bi-info-circle me-1"></i> No corporate reports indexed for ${data.ticker}. Upload a report below to enable AI audits and Q&A.</span>`;
+                chatInput.setAttribute('data-rag-active', 'false');
+                if (chatMode === 'rag') {
+                    chatInput.setAttribute('disabled', 'true');
+                    chatBtn.setAttribute('disabled', 'true');
+                    if (chatPlaceholder) chatPlaceholder.classList.remove('d-none');
+                }
+            }
+
+            // Render Markdown advisory report (Step 10)
+            if (data.report_markdown) {
+                lastReportMarkdown = data.report_markdown;
+                document.getElementById('advisory-report-body').innerHTML = marked.parse(data.report_markdown);
+            } else {
+                lastReportMarkdown = "";
+                document.getElementById('advisory-report-body').innerHTML = `<p class="text-secondary text-center py-5">No consolidated report found.</p>`;
+            }
+
+            // Refresh chat modes for current ticker status
+            toggleChatMode(chatMode);
+            
+            // Reset upload form inputs
+            document.getElementById('pdf-file-input').value = '';
+            document.getElementById('upload-status').innerText = '';
+
+            // Draw historical Chart
+            drawChart(data.history.dates, data.history.close);
+
+            // Populate News Feed
+            const newsContainer = document.getElementById('news-container');
+            const newsCountEl = document.getElementById('news-count');
+            newsContainer.innerHTML = '';
+            
+            if (data.news && data.news.length > 0) {
+                newsCountEl.innerText = `${data.news.length} Articles Found`;
+                data.news.forEach(item => {
+                    const articleEl = document.createElement('div');
+                    articleEl.className = 'border border-secondary-subtle rounded-3 p-3 bg-dark-subtle d-flex flex-column gap-1';
+                    
+                    const titleRow = document.createElement('div');
+                    titleRow.className = 'd-flex justify-content-between align-items-start gap-2';
+                    
+                    const titleLink = document.createElement('a');
+                    titleLink.href = item.url;
+                    titleLink.target = '_blank';
+                    titleLink.className = 'text-info fw-bold text-decoration-none';
+                    titleLink.style.fontSize = '0.925rem';
+                    titleLink.innerText = item.title;
+                    
+                    const sourceBadge = document.createElement('span');
+                    sourceBadge.className = 'badge bg-secondary text-light';
+                    sourceBadge.style.fontSize = '0.7rem';
+                    sourceBadge.innerText = item.source;
+                    
+                    titleRow.appendChild(titleLink);
+                    titleRow.appendChild(sourceBadge);
+                    
+                    const descText = document.createElement('p');
+                    descText.className = 'text-secondary mb-0';
+                    descText.style.fontSize = '0.825rem';
+                    descText.innerText = item.description;
+                    
+                    articleEl.appendChild(titleRow);
+                    articleEl.appendChild(descText);
+                    newsContainer.appendChild(articleEl);
+                });
+            } else {
+                newsCountEl.innerText = '0 Articles Found';
+                newsContainer.innerHTML = '<div class="text-secondary text-center py-4">No recent news fetched.</div>';
+            }
+
+            // Populate Observability Logs
+            const logsTableBody = document.getElementById('logs-table-body');
+            const logsCountEl = document.getElementById('logs-count');
+            logsTableBody.innerHTML = '';
+            
+            if (data.execution_logs && data.execution_logs.length > 0) {
+                logsCountEl.innerText = `${data.execution_logs.length} Nodes Run`;
+                data.execution_logs.forEach(log => {
+                    const row = document.createElement('tr');
+                    
+                    // Agent name cell
+                    const nameCell = document.createElement('td');
+                    nameCell.className = 'fw-bold';
+                    let icon = 'bi-cpu';
+                    let color = 'text-cyan';
+                    if (log.agent_name.includes('Financial')) { icon = 'bi-currency-rupee'; color = 'text-info'; }
+                    else if (log.agent_name.includes('News')) { icon = 'bi-newspaper'; color = 'text-warning'; }
+                    else if (log.agent_name.includes('Risk')) { icon = 'bi-shield-exclamation'; color = 'text-purple'; }
+                    else if (log.agent_name.includes('Sentiment')) { icon = 'bi-chat-heart'; color = 'text-danger'; }
+                    else if (log.agent_name.includes('Prediction') || log.agent_name.includes('ML')) { icon = 'bi-robot'; color = 'text-success'; }
+                    else if (log.agent_name.includes('RAG')) { icon = 'bi-file-earmark-pdf'; color = 'text-cyan'; }
+                    nameCell.innerHTML = `<i class="bi ${icon} ${color} me-1"></i> ${log.agent_name}`;
+                    
+                    // Duration cell
+                    const durCell = document.createElement('td');
+                    durCell.innerText = `${log.duration_seconds.toFixed(3)}s`;
+                    
+                    // Status cell
+                    const statusCell = document.createElement('td');
+                    const statusColor = log.status === 'success' ? 'status-success' : 'status-failed';
+                    statusCell.innerHTML = `<span class="status-indicator ${statusColor}"></span>${log.status === 'success' ? 'Success' : 'Failed'}`;
+                    
+                    // Cache cell
+                    const cacheCell = document.createElement('td');
+                    if (log.cache_hit) {
+                        cacheCell.innerHTML = `<span class="badge bg-success-subtle text-success border border-success-subtle">HIT</span>`;
+                    } else if (log.agent_name.includes('Risk') || log.agent_name.includes('Prediction') || log.agent_name.includes('ML') || log.agent_name.includes('RAG')) {
+                        cacheCell.innerHTML = `<span class="badge bg-secondary-subtle text-secondary border border-secondary">N/A</span>`;
+                    } else {
+                        cacheCell.innerHTML = `<span class="badge bg-warning-subtle text-warning border border-warning-subtle">MISS</span>`;
+                    }
+                    
+                    row.appendChild(nameCell);
+                    row.appendChild(durCell);
+                    row.appendChild(statusCell);
+                    row.appendChild(cacheCell);
+                    logsTableBody.appendChild(row);
+                });
+            } else {
+                logsCountEl.innerText = '0 Nodes Run';
+                logsTableBody.innerHTML = '<tr class="text-secondary text-center"><td colspan="4" class="py-4">No agent logs.</td></tr>';
+            }
+        }
+
+        function drawChart(dates, closes) {
+            const ctx = document.getElementById('stock-chart').getContext('2d');
+            
+            // Cache current chart data for theme toggle re-renders
+            lastChartData = { dates, closes };
+            
+            // If chart exists, destroy it first to update cleanly
+            if (stockChart) {
+                stockChart.destroy();
+            }
+
+            // Read theme variables
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#3b82f6';
+            const textSecondary = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#94a3b8';
+            const borderSubtle = getComputedStyle(document.documentElement).getPropertyValue('--border-subtle').trim() || 'rgba(255, 255, 255, 0.05)';
+            const bgCard = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#1c1f26';
+            const textPrimary = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#f3f4f6';
+
+            const fillStart = hexToRgbA(primaryColor, 0.2);
+            const fillEnd = hexToRgbA(primaryColor, 0.0);
+
+            // Create gradient for under the line
+            const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+            gradient.addColorStop(0, fillStart);
+            gradient.addColorStop(1, fillEnd);
+
+            stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Close Price',
+                        data: closes,
+                        borderColor: primaryColor,
+                        borderWidth: 2,
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.15,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        pointHoverBackgroundColor: primaryColor,
+                        pointHoverBorderColor: bgCard,
+                        pointHoverBorderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: bgCard,
+                            titleColor: textPrimary,
+                            bodyColor: textSecondary,
+                            borderColor: borderSubtle,
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Price: ₹${context.parsed.y.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: textSecondary,
+                                maxTicksLimit: 8,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: borderSubtle
+                            },
+                            ticks: {
+                                color: textSecondary,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Report Downloader (Step 10)
+        function downloadReport() {
+            if (!lastReportMarkdown) {
+                alert("Please analyze a stock first to generate a report.");
+                return;
+            }
+            const blob = new Blob([lastReportMarkdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `investment_report_${currentTicker || 'stock'}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // PDF Report Downloader
+        function downloadPdfReport() {
+            if (!currentTicker) {
+                alert("Please analyze a stock first to generate a report.");
+                return;
+            }
+            window.location.href = `/api/analyses/pdf/${currentTicker}`;
+        }
+
+        // Fetch holdings from SQLite portfolio_items table
+        function fetchPortfolio() {
+            const tableBody = document.getElementById('portfolio-table-body');
+            const totalLbl = document.getElementById('port-total-weight-lbl');
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><span class="spinner-border spinner-border-sm text-info me-2"></span>Loading holdings...</td></tr>';
+            
+            fetch('/api/portfolio')
+                .then(res => res.json())
+                .then(data => {
+                    tableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr class="text-secondary text-center"><td colspan="6" class="py-4">No holdings in portfolio. Add tickers above.</td></tr>';
+                        totalLbl.innerText = '0.0%';
+                        return;
+                    }
+                    
+                    let totalWeight = 0;
+                    data.forEach(item => {
+                        totalWeight += item.allocation_percentage;
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="fw-bold text-info">${item.ticker}</td>
+                            <td>${item.shares ? item.shares.toLocaleString(undefined, {maximumFractionDigits: 2}) : '0'}</td>
+                            <td>${item.allocation_percentage.toFixed(1)}%</td>
+                            <td><span class="badge bg-secondary-subtle text-secondary-emphasis">${item.sector || 'Loading...'}</span></td>
+                            <td>${item.beta ? item.beta.toFixed(2) : 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-sm p-1 py-0" onclick="deletePortfolioHolding('${item.ticker}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    totalLbl.innerText = `${totalWeight.toFixed(1)}%`;
+                    
+                    // Style total label if weight exceeds 100%
+                    if (totalWeight > 100.0) {
+                        totalLbl.className = "text-danger fw-bold";
+                    } else if (totalWeight === 100.0) {
+                        totalLbl.className = "text-success fw-bold";
+                    } else {
+                        totalLbl.className = "text-white fw-bold";
+                    }
+                })
+                .catch(err => {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-danger text-center py-3">Failed to load portfolio.</td></tr>';
+                    console.error(err);
+                });
+        }
+
+        // Delete holding
+        function deletePortfolioHolding(ticker) {
+            fetch(`/api/portfolio/${ticker}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    fetchPortfolio();
+                })
+                .catch(err => console.error(err));
+        }
+
+        // Add holding listener
+        document.getElementById('portfolio-add-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tickerEl = document.getElementById('port-ticker-input');
+            const sharesEl = document.getElementById('port-shares-input');
+            const alertEl = document.getElementById('port-alert');
+            
+            alertEl.classList.add('d-none');
+            
+            const ticker = tickerEl.value.trim().toUpperCase();
+            const shares = parseFloat(sharesEl.value);
+            
+            if (!ticker || isNaN(shares)) return;
+            
+            fetch('/api/portfolio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticker: ticker, shares: shares })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    tickerEl.value = '';
+                    sharesEl.value = '';
+                    fetchPortfolio();
+                } else {
+                    alertEl.innerText = data.error || "Failed to add holding.";
+                    alertEl.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                alertEl.innerText = "Error connecting to server.";
+                alertEl.classList.remove('d-none');
+                console.error(err);
+            });
+        });
+
+        // Run Portfolio diversification and risk analysis
+        function analyzePortfolio() {
+            const btn = document.getElementById('port-btn-analyze');
+            btn.setAttribute('disabled', 'true');
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Analyzing...';
+            
+            fetch('/api/portfolio/analyze')
+                .then(res => res.json())
+                .then(data => {
+                    btn.removeAttribute('disabled');
+                    btn.innerHTML = '<i class="bi bi-pie-chart me-1"></i> Analyze Portfolio';
+                    
+                    if (!data.success) {
+                        alert(data.error || "Portfolio analysis failed.");
+                        return;
+                    }
+                    
+                    // Render portfolio metrics
+                    document.getElementById('val-port-beta').innerText = data.portfolio_beta.toFixed(3);
+                    document.getElementById('val-port-diversification').innerText = data.diversification_score;
+                    
+                    const riskLvlEl = document.getElementById('val-port-risk-level');
+                    riskLvlEl.innerText = data.portfolio_risk_level;
+                    riskLvlEl.className = "metric-value fs-4 fw-bold";
+                    if (data.portfolio_risk_level === "Low Risk") {
+                        riskLvlEl.classList.add("text-success");
+                    } else if (data.portfolio_risk_level === "Medium Risk") {
+                        riskLvlEl.classList.add("text-warning");
+                    } else {
+                        riskLvlEl.classList.add("text-danger");
+                    }
+                    
+                    // Render sector list
+                    const listEl = document.getElementById('portfolio-sector-list');
+                    listEl.innerHTML = '';
+                    
+                    const sectors = Object.keys(data.sector_allocations);
+                    if (sectors.length === 0) {
+                        listEl.innerHTML = '<p class="text-secondary text-center py-4">No sector data calculated.</p>';
+                    } else {
+                        sectors.forEach(sec => {
+                            const pct = data.sector_allocations[sec];
+                            const item = document.createElement('div');
+                            item.className = 'd-flex justify-content-between align-items-center border border-secondary-subtle p-2 rounded bg-dark-subtle';
+                            item.innerHTML = `
+                                <span>${sec}</span>
+                                <span class="badge bg-info text-dark fw-bold">${pct}%</span>
+                            `;
+                            listEl.appendChild(item);
+                        });
+                    }
+                    
+                    // Render sector Pie Chart
+                    drawPortfolioPieChart(sectors, Object.values(data.sector_allocations));
+                    
+                    // Generate Portfolio Insights & Recommendations
+                    const exposureList = document.getElementById('portfolio-insights-exposure');
+                    const recommendationList = document.getElementById('portfolio-insights-recommendation');
+                    
+                    exposureList.innerHTML = '';
+                    recommendationList.innerHTML = '';
+                    
+                    const holdings = data.holdings || [];
+                    const score = data.diversification_score || 0;
+                    const beta = data.portfolio_beta || 0.0;
+                    const totalWeight = data.total_weight || 0.0;
+                    
+                    // 1. Populate Sector Exposures
+                    if (sectors.length === 0) {
+                        exposureList.innerHTML = '<li>No exposure data available.</li>';
+                    } else {
+                        sectors.forEach(sec => {
+                            const pct = data.sector_allocations[sec];
+                            const li = document.createElement('li');
+                            li.innerHTML = `<strong>${sec}:</strong> ${pct}%`;
+                            exposureList.appendChild(li);
+                        });
+                        // Add diversification score to exposure list
+                        const scoreLi = document.createElement('li');
+                        scoreLi.innerHTML = `<strong>Diversification score:</strong> ${score}`;
+                        exposureList.appendChild(scoreLi);
+                    }
+                    
+                    // 2. Generate Recommendations
+                    let recs = [];
+                    
+                    // Capital allocation advice
+                    if (totalWeight !== 100.0) {
+                        recs.push(`<strong>Capital Allocation:</strong> Adjust weight to sum exactly to 100.0% (currently ${totalWeight.toFixed(1)}%).`);
+                    }
+                    
+                    // Holdings count advice
+                    if (holdings.length === 0) {
+                        recs.push(`Please add at least 3-4 stock holdings to start modeling risk.`);
+                    } else if (holdings.length < 3) {
+                        recs.push(`High concentration (${holdings.length} holding${holdings.length > 1 ? 's' : ''}). Expand to 3-5 distinct stocks.`);
+                    }
+                    
+                    // Sector concentration advice
+                    if (sectors.length > 0) {
+                        const sortedSectors = Object.entries(data.sector_allocations).sort((a, b) => b[1] - a[1]);
+                        const topSector = sortedSectors[0][0];
+                        const topPct = sortedSectors[0][1];
+                        
+                        if (topPct > 40) {
+                            let suggestedSectors = [];
+                            const allSectors = ["Financial Services", "Technology", "Consumer Cyclical", "Healthcare", "Industrials", "Consumer Defensive", "Energy", "Basic Materials", "Real Estate", "Utilities"];
+                            allSectors.forEach(s => {
+                                if (!data.sector_allocations[s] && suggestedSectors.length < 2) {
+                                    suggestedSectors.push(s);
+                                }
+                            });
+                            const suggestionStr = suggestedSectors.length > 0 ? ` Add exposure in sectors like ${suggestedSectors.join(' or ')}.` : '';
+                            recs.push(`Reduce ${topSector} concentration (currently ${topPct}%).${suggestionStr}`);
+                        }
+                    }
+                    
+                    // Diversification score advice
+                    if (holdings.length > 0 && score < 50) {
+                        recs.push(`Low diversification score. Allocate capital across uncorrelated sectors.`);
+                    }
+                    
+                    // Beta advice
+                    if (holdings.length > 0) {
+                        if (beta > 1.25) {
+                            recs.push(`High volatility (Beta: ${beta.toFixed(2)}). Consider adding defensive, low-Beta stocks (Beta < 0.8) like FMCG or Utilities.`);
+                        } else if (beta < 0.75 && beta > 0.1) {
+                            recs.push(`Defensive profile (Beta: ${beta.toFixed(2)}). Consider adding growth assets if you wish to capture more market upside.`);
+                        }
+                    }
+                    
+                    // Fallback default recommendation
+                    if (recs.length === 0 && holdings.length > 0) {
+                        recs.push(`Portfolio is well-diversified. Maintain current allocation and monitor upcoming earnings.`);
+                    }
+                    
+                    recs.forEach(r => {
+                        const li = document.createElement('li');
+                        li.innerHTML = r;
+                        recommendationList.appendChild(li);
+                    });
+                    
+                    // Also refresh holdings list to load the sectors/betas we populated
+                    fetchPortfolio();
+                })
+                .catch(err => {
+                    btn.removeAttribute('disabled');
+                    btn.innerHTML = '<i class="bi bi-pie-chart me-1"></i> Analyze Portfolio';
+                    alert("Connection error running portfolio analysis.");
+                    console.error(err);
+                });
+        }
+
+        // Draw Pie Chart using Chart.js
+        function drawPortfolioPieChart(labels, values) {
+            const ctx = document.getElementById('portfolio-pie-chart').getContext('2d');
+            
+            // Cache current portfolio chart data for theme toggle re-renders
+            lastPortfolioData = { labels, values };
+            
+            if (portfolioChart) {
+                portfolioChart.destroy();
+            }
+            
+            const borderSubtle = getComputedStyle(document.documentElement).getPropertyValue('--border-subtle').trim() || 'rgba(255, 255, 255, 0.04)';
+            const bgCard = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#131a26';
+            const textPrimary = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#f8fafc';
+            const textSecondary = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#94a3b8';
+            
+            const backgroundColors = [
+                '#3b82f6', // blue
+                '#10b981', // emerald
+                '#f59e0b', // amber
+                '#ef4444', // rose
+                '#8b5cf6', // purple
+                '#06b6d4', // cyan
+                '#f97316', // orange
+                '#64748b'  // slate
+            ];
+            
+            portfolioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: backgroundColors.slice(0, labels.length),
+                        borderColor: bgCard,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: bgCard,
+                            titleColor: textPrimary,
+                            bodyColor: textSecondary,
+                            borderColor: borderSubtle,
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Draw Strategy Backtesting Line Chart using Chart.js
+        function drawBacktestChart(results) {
+            const ctx = document.getElementById('backtest-chart').getContext('2d');
+            
+            lastBacktestData = results;
+            
+            if (backtestChartInstance) {
+                backtestChartInstance.destroy();
+            }
+            
+            const dates = results.map(r => r.date);
+            const strategyData = results.map(r => r.strategy_return);
+            const benchmarkData = results.map(r => r.benchmark_return);
+            
+            const textSecondary = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim() || '#94a3b8';
+            const borderSubtle = getComputedStyle(document.documentElement).getPropertyValue('--border-subtle').trim() || 'rgba(255, 255, 255, 0.05)';
+            const bgCard = getComputedStyle(document.documentElement).getPropertyValue('--bg-card').trim() || '#1c1f26';
+            const textPrimary = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#f3f4f6';
+            
+            backtestChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'XGBoost Strategy',
+                            data: strategyData,
+                            borderColor: '#10b981', // Emerald green
+                            borderWidth: 2,
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        },
+                        {
+                            label: 'Nifty 50 Benchmark',
+                            data: benchmarkData,
+                            borderColor: '#8b5cf6', // Purple
+                            borderWidth: 2,
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                color: textPrimary,
+                                boxWidth: 12,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: bgCard,
+                            titleColor: textPrimary,
+                            bodyColor: textSecondary,
+                            borderColor: borderSubtle,
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: textSecondary,
+                                maxTicksLimit: 8,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: borderSubtle
+                            },
+                            ticks: {
+                                color: textSecondary,
+                                font: {
+                                    size: 10
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function fetchSystemMetrics() {
+            const cacheHitEl = document.getElementById('lbl-metric-cache-hit');
+            const cacheCountEl = document.getElementById('lbl-metric-cache-count');
+            const xgbAccEl = document.getElementById('lbl-metric-xgb-accuracy');
+            const totalRunsEl = document.getElementById('lbl-metric-total-runs');
+            const tableBody = document.getElementById('metrics-table-body');
+            
+            tableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4"><span class="spinner-border spinner-border-sm text-info me-2"></span>Loading metrics...</td></tr>';
+            
+            fetch('/api/observability/metrics')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        cacheHitEl.innerText = `${data.cache_hit_rate.toFixed(1)}%`;
+                        cacheCountEl.innerText = `${data.cache_hits_count} Hits / ${data.cache_misses_count} Misses`;
+                        xgbAccEl.innerText = `${data.prediction_accuracy.toFixed(2)}%`;
+                        totalRunsEl.innerText = `${data.total_runs} Runs`;
+                        
+                        tableBody.innerHTML = '';
+                        
+                        const latencies = data.latencies;
+                        const agents = Object.keys(latencies);
+                        
+                        if (agents.length > 0) {
+                            agents.forEach(agent => {
+                                const rec = latencies[agent];
+                                const row = document.createElement('tr');
+                                
+                                const nameCell = document.createElement('td');
+                                nameCell.className = 'fw-bold';
+                                nameCell.innerText = agent;
+                                
+                                const latCell = document.createElement('td');
+                                latCell.innerText = `${rec.avg_seconds.toFixed(3)}s`;
+                                
+                                const countCell = document.createElement('td');
+                                countCell.innerText = rec.count;
+                                
+                                row.appendChild(nameCell);
+                                row.appendChild(latCell);
+                                row.appendChild(countCell);
+                                tableBody.appendChild(row);
+                            });
+                        } else {
+                            tableBody.innerHTML = '<tr><td colspan="3" class="text-secondary text-center py-3">No metrics logged yet.</td></tr>';
+                        }
+                        
+                        // Populate detailed validation metrics
+                        if (data.prediction_details && Object.keys(data.prediction_details).length > 0) {
+                            const details = data.prediction_details;
+                            document.getElementById('xgb-details-section').classList.remove('d-none');
+                            document.getElementById('lbl-xgb-train-samples').innerText = details.train_samples || 0;
+                            document.getElementById('lbl-xgb-test-samples').innerText = details.test_samples || 0;
+                            document.getElementById('lbl-xgb-features-count').innerText = details.features_count || 0;
+                            document.getElementById('lbl-xgb-tickers-used').innerText = details.tickers_used || 0;
+                            
+                            // Populate Classification Report
+                            const repBody = document.getElementById('xgb-report-table-body');
+                            repBody.innerHTML = '';
+                            const rep = details.classification_report || {};
+                            const classes = ['Bearish', 'Neutral', 'Bullish'];
+                            classes.forEach(c => {
+                                if (rep[c]) {
+                                    const tr = document.createElement('tr');
+                                    tr.innerHTML = `
+                                        <td class="fw-bold">${c}</td>
+                                        <td>${(rep[c].precision * 100).toFixed(1)}%</td>
+                                        <td>${(rep[c].recall * 100).toFixed(1)}%</td>
+                                        <td>${(rep[c]['f1-score'] * 100).toFixed(1)}%</td>
+                                    `;
+                                    repBody.appendChild(tr);
+                                }
+                            });
+                            
+                            // Populate Confusion Matrix
+                            const cm = details.confusion_matrix || [];
+                            if (cm.length === 3) {
+                                document.getElementById('cm-0-0').innerText = cm[0][0];
+                                document.getElementById('cm-0-1').innerText = cm[0][1];
+                                document.getElementById('cm-0-2').innerText = cm[0][2];
+                                
+                                document.getElementById('cm-1-0').innerText = cm[1][0];
+                                document.getElementById('cm-1-1').innerText = cm[1][1];
+                                document.getElementById('cm-1-2').innerText = cm[1][2];
+                                
+                                document.getElementById('cm-2-0').innerText = cm[2][0];
+                                document.getElementById('cm-2-1').innerText = cm[2][1];
+                                document.getElementById('cm-2-2').innerText = cm[2][2];
+                            }
+                            
+                            // Populate Feature Importance
+                            const impContainer = document.getElementById('xgb-importance-container');
+                            if (impContainer) {
+                                impContainer.innerHTML = '';
+                                const imps = details.feature_importances || {};
+                                
+                                // Sort by importance descending
+                                const sortedImps = Object.entries(imps).sort((a, b) => b[1] - a[1]);
+                                
+                                const featureLabels = {
+                                    "rsi_14": "RSI (14-day momentum)",
+                                    "macd_line": "MACD Line",
+                                    "macd_signal": "MACD Signal Line",
+                                    "macd_hist": "MACD Histogram (divergence)",
+                                    "dist_sma_50": "Distance from 50-day SMA",
+                                    "bb_width": "Bollinger Bands width (volatility)",
+                                    "price_change_5d": "5-day Price Return",
+                                    "volume_change_5d": "5-day Volume Change"
+                                };
+                                
+                                sortedImps.forEach(([feat, val]) => {
+                                    const pct = val * 100;
+                                    const col = document.createElement('div');
+                                    col.className = 'col-md-6 mb-2';
+                                    col.innerHTML = `
+                                        <div class="d-flex justify-content-between mb-1" style="font-size: 0.8rem;">
+                                            <span class="text-secondary fw-semibold">${featureLabels[feat] || feat}</span>
+                                            <span class="text-white fw-bold">${pct.toFixed(1)}%</span>
+                                        </div>
+                                        <div class="progress bg-dark" style="height: 6px;">
+                                            <div class="progress-bar bg-info" style="width: ${pct}%"></div>
+                                        </div>
+                                    `;
+                                    impContainer.appendChild(col);
+                                });
+                            }
+                        } else {
+                            document.getElementById('xgb-details-section').classList.add('d-none');
+                        }
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="3" class="text-danger text-center py-3">Failed to load: ${data.error}</td></tr>`;
+                    }
+                })
+                .catch(err => {
+                    tableBody.innerHTML = '<tr><td colspan="3" class="text-danger text-center py-3">Connection error.</td></tr>';
+                    console.error(err);
+                });
+
+            // Fetch backtest simulation results
+            fetch('/api/observability/backtest')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.results && data.results.daily_returns && data.results.daily_returns.length > 0) {
+                        document.getElementById('backtest-section').classList.remove('d-none');
+                        
+                        const m = data.results.metrics;
+                        const th = data.results.optimal_threshold || 0.42;
+                        
+                        const descEl = document.getElementById('lbl-backtest-desc');
+                        if (descEl) {
+                            descEl.innerText = `Cumulative returns comparison: Daily rebalanced portfolio of Nifty 50 stocks predicted bullish (Bullish Prob > ${th.toFixed(2)}) vs Nifty 50 Index (^NSEI) daily benchmark return.`;
+                        }
+                        
+                        // Populate top highlight cards
+                        document.getElementById('lbl-backtest-alpha').innerText = `${m.alpha >= 0 ? '+' : ''}${m.alpha.toFixed(2)}%`;
+                        document.getElementById('lbl-backtest-ir').innerText = m.information_ratio.toFixed(3);
+                        document.getElementById('lbl-backtest-maxdd').innerText = `-${m.strategy.max_drawdown.toFixed(2)}%`;
+                        
+                        // Populate comparison table
+                        document.getElementById('lbl-backtest-strat-cum').innerText = `${m.strategy.cumulative_return >= 0 ? '+' : ''}${m.strategy.cumulative_return.toFixed(2)}%`;
+                        document.getElementById('lbl-backtest-bench-cum').innerText = `${m.benchmark.cumulative_return >= 0 ? '+' : ''}${m.benchmark.cumulative_return.toFixed(2)}%`;
+                        
+                        document.getElementById('lbl-backtest-strat-ann').innerText = `${m.strategy.annualized_return >= 0 ? '+' : ''}${m.strategy.annualized_return.toFixed(2)}%`;
+                        document.getElementById('lbl-backtest-bench-ann').innerText = `${m.benchmark.annualized_return >= 0 ? '+' : ''}${m.benchmark.annualized_return.toFixed(2)}%`;
+                        
+                        document.getElementById('lbl-backtest-strat-vol').innerText = `${m.strategy.volatility.toFixed(2)}%`;
+                        document.getElementById('lbl-backtest-bench-vol').innerText = `${m.benchmark.volatility.toFixed(2)}%`;
+                        
+                        document.getElementById('lbl-backtest-strat-sharpe').innerText = m.strategy.sharpe_ratio.toFixed(3);
+                        document.getElementById('lbl-backtest-bench-sharpe').innerText = m.benchmark.sharpe_ratio.toFixed(3);
+                        
+                        document.getElementById('lbl-backtest-strat-win').innerText = `${m.strategy.win_rate.toFixed(2)}%`;
+                        document.getElementById('lbl-backtest-bench-win').innerText = `${m.benchmark.win_rate.toFixed(2)}%`;
+                        
+                        drawBacktestChart(data.results.daily_returns);
+                    } else {
+                        document.getElementById('backtest-section').classList.add('d-none');
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching backtest results:", err);
+                    document.getElementById('backtest-section').classList.add('d-none');
+                });
+        }
+    </script>
+
+    <!-- System Architecture Modal -->
+    <div class="modal fade" id="workflowModal" tabindex="-1" aria-labelledby="workflowModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content workflow-modal-content border border-secondary text-white rounded-3">
+                <div class="modal-header border-bottom border-secondary-subtle">
+                    <h5 class="modal-title d-flex align-items-center" id="workflowModalLabel">
+                        <i class="bi bi-diagram-3 text-info me-2 fs-4"></i> LangGraph Multi-Agent Architecture
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-secondary mb-4">This platform runs an autonomous multi-agent workflow using LangGraph. Here is the sequence of parallel and serial node executions triggered when you analyze a stock ticker:</p>
+                    
+                    <!-- Flow Diagram -->
+                    <div class="workflow-diagram-container p-3 rounded bg-dark-subtle border border-secondary-subtle">
+                        <div class="row text-center g-3 align-items-center justify-content-center">
+                            
+                            <!-- Financial Agent -->
+                            <div class="col-md-3">
+                                <div class="workflow-node-card p-3">
+                                    <div class="badge bg-info-subtle text-info mb-2">Entry Node</div>
+                                    <h6 class="text-white mb-1">Financial Agent</h6>
+                                    <p class="text-secondary mb-0" style="font-size: 0.75rem;">Fetches real-time price, history (yfinance) and fundamentals.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Arrow -->
+                            <div class="col-md-1 d-none d-md-block">
+                                <div class="fs-3 text-info"><i class="bi bi-arrow-right-short"></i></div>
+                            </div>
+                            <div class="col-12 d-md-none text-center">
+                                <div class="fs-4 text-info"><i class="bi bi-arrow-down-short"></i></div>
+                            </div>
+
+                            <!-- Parallel Branch Container -->
+                            <div class="col-md-4">
+                                <div class="p-3 border border-secondary rounded bg-dark">
+                                    <div class="badge bg-secondary-subtle text-white mb-3">Parallel Execution</div>
+                                    
+                                    <div class="d-flex flex-column gap-3">
+                                        <!-- News & Sentiment Branch -->
+                                        <div class="border border-warning-subtle rounded p-2 text-start bg-dark-subtle">
+                                            <div class="fw-bold text-warning" style="font-size: 0.8rem;">News & Sentiment Flow</div>
+                                            <span style="font-size: 0.7rem;" class="text-secondary">News Agent (NewsAPI/Tavily) → Sentiment Agent (FinBERT Tone Classification) → ML Predictor (XGBoost 30-Day prediction)</span>
+                                        </div>
+                                        
+                                        <!-- Risk Branch -->
+                                        <div class="border border-purple-subtle rounded p-2 text-start bg-dark-subtle">
+                                            <div class="fw-bold text-purple" style="font-size: 0.8rem;">Risk Profile Node</div>
+                                            <span style="font-size: 0.7rem;" class="text-secondary">Calculates annualized volatility, Nifty Beta, and Sharpe ratio.</span>
+                                        </div>
+                                        
+                                        <!-- RAG Branch -->
+                                        <div class="border border-cyan-subtle rounded p-2 text-start bg-dark-subtle">
+                                            <div class="fw-bold text-cyan" style="font-size: 0.8rem;">RAG Audit Node</div>
+                                            <span style="font-size: 0.7rem;" class="text-secondary">Retrieves context from uploaded annual reports via ChromaDB vector store.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="col-md-1 d-none d-md-block">
+                                <div class="fs-3 text-info"><i class="bi bi-arrow-right-short"></i></div>
+                            </div>
+                            <div class="col-12 d-md-none text-center">
+                                <div class="fs-4 text-info"><i class="bi bi-arrow-down-short"></i></div>
+                            </div>
+
+                            <!-- Reporter Agent -->
+                            <div class="col-md-3">
+                                <div class="workflow-node-card p-3">
+                                    <div class="badge bg-success-subtle text-success mb-2">Join Node (End)</div>
+                                    <h6 class="text-white mb-1">Reporter Agent</h6>
+                                    <p class="text-secondary mb-0" style="font-size: 0.75rem;">Aggregates all results and runs Gemini 2.5 Flash to compile markdown advisory report.</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h6 class="text-white mb-2"><i class="bi bi-gear-fill me-1 text-info"></i> Graph State Coordination Details:</h6>
+                        <ul class="text-secondary" style="font-size: 0.85rem; line-height: 1.6;">
+                            <li><strong>State Initialization:</strong> The supervisor receives the ticker, seeds a blank `execution_logs` array, and saves an initial database run to obtain a unique `analysis_id`.</li>
+                            <li><strong>Data Dependencies:</strong> News, Risk, and RAG agents execute concurrently because they only depend on initial metadata returned by the Financial Agent.</li>
+                            <li><strong>NLP Sentiment & ML Sequence:</strong> The Sentiment Agent runs immediately after the News Agent finishes classifying headlines, and its output is then used by the XGBoost Predictor to run feature importance (SHAP).</li>
+                            <li><strong>Reporter Coalition:</strong> The Reporter Agent acts as the final sink, executing only after all parallel runs finish to compile the Markdown advisory report and save the consolidated state to SQLite.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Observability Modal -->
+    <div class="modal fade" id="metricsModal" tabindex="-1" aria-labelledby="metricsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary text-white rounded-3">
+                <div class="modal-header border-bottom border-secondary-subtle">
+                    <h5 class="modal-title d-flex align-items-center" id="metricsModalLabel">
+                        <i class="bi bi-activity text-info me-2 fs-4"></i> System Observability Metrics
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    
+                    <!-- Metrics Summary Grid -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                <div class="metric-title text-secondary mb-1">Cache Hit Rate</div>
+                                <div class="metric-value text-success fs-3 fw-bold" id="lbl-metric-cache-hit">100.0%</div>
+                                <div class="text-secondary mt-1" style="font-size: 0.75rem;" id="lbl-metric-cache-count">0 Hits / 0 Misses</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                <div class="metric-title text-secondary mb-1">XGBoost Accuracy</div>
+                                <div class="metric-value text-info fs-3 fw-bold" id="lbl-metric-xgb-accuracy">46.95%</div>
+                                <div class="text-secondary mt-1" style="font-size: 0.75rem;">Based on 5y historical test</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle text-center">
+                                <div class="metric-title text-secondary mb-1">Total Executions</div>
+                                <div class="metric-value text-warning fs-3 fw-bold" id="lbl-metric-total-runs">0 Runs</div>
+                                <div class="text-secondary mt-1" style="font-size: 0.75rem;">Completed analyses</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LLM Benchmarks -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-secondary" style="font-size: 0.85rem;">FinBERT Sentiment Accuracy</span>
+                                    <span class="text-white fw-bold" style="font-size: 0.85rem;">82.5%</span>
+                                </div>
+                                <div class="progress bg-dark" style="height: 6px;">
+                                    <div class="progress-bar bg-success" style="width: 82.5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-secondary" style="font-size: 0.85rem;">Gemini RAG Answer Accuracy</span>
+                                    <span class="text-white fw-bold" style="font-size: 0.85rem;">91.0%</span>
+                                </div>
+                                <div class="progress bg-dark" style="height: 6px;">
+                                    <div class="progress-bar bg-info" style="width: 91%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Latency Breakdown Table -->
+                    <h6 class="text-white mb-2"><i class="bi bi-clock me-1 text-info"></i> Mean Latency Breakdown</h6>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-borderless mb-0" style="font-size: 0.9rem;">
+                            <thead>
+                                <tr class="border-bottom border-secondary">
+                                    <th>Agent Node</th>
+                                    <th>Mean Latency</th>
+                                    <th>Total Calls</th>
+                                </tr>
+                            </thead>
+                            <tbody id="metrics-table-body">
+                                <tr class="text-secondary text-center"><td colspan="3" class="py-3">No metrics logged.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- XGBoost Validation Details -->
+                    <div id="xgb-details-section" class="mt-4 d-none">
+                        <hr class="border-secondary-subtle">
+                        <h6 class="text-white mb-3"><i class="bi bi-file-text me-1 text-info"></i> XGBoost Validation Metrics (Time-Series Split)</h6>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <div class="border border-secondary-subtle rounded-3 p-2 bg-dark-subtle text-center">
+                                    <div class="text-secondary mb-1" style="font-size: 0.75rem;">Train Samples</div>
+                                    <div class="fw-bold" style="font-size: 1rem;" id="lbl-xgb-train-samples">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border border-secondary-subtle rounded-3 p-2 bg-dark-subtle text-center">
+                                    <div class="text-secondary mb-1" style="font-size: 0.75rem;">Test Samples</div>
+                                    <div class="fw-bold" style="font-size: 1rem;" id="lbl-xgb-test-samples">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border border-secondary-subtle rounded-3 p-2 bg-dark-subtle text-center">
+                                    <div class="text-secondary mb-1" style="font-size: 0.75rem;">Features Count</div>
+                                    <div class="fw-bold" style="font-size: 1rem;" id="lbl-xgb-features-count">0</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="border border-secondary-subtle rounded-3 p-2 bg-dark-subtle text-center">
+                                    <div class="text-secondary mb-1" style="font-size: 0.75rem;">Tickers Used</div>
+                                    <div class="fw-bold" style="font-size: 1rem;" id="lbl-xgb-tickers-used">0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 text-start">
+                            <!-- Classification Report -->
+                            <div class="col-md-6">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle h-100">
+                                    <div class="fw-bold text-secondary mb-2" style="font-size: 0.85rem;">Classification Report</div>
+                                    <table class="table table-dark table-sm table-borderless mb-0 align-middle" style="font-size: 0.8rem;">
+                                        <thead>
+                                            <tr class="text-secondary border-bottom border-secondary">
+                                                <th>Class</th>
+                                                <th>Precision</th>
+                                                <th>Recall</th>
+                                                <th>F1-Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="xgb-report-table-body">
+                                            <!-- report rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Confusion Matrix -->
+                            <div class="col-md-6">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle h-100">
+                                    <div class="fw-bold text-secondary mb-2" style="font-size: 0.85rem;">Confusion Matrix</div>
+                                    <table class="table table-dark table-sm table-bordered mb-0 text-center align-middle" style="font-size: 0.8rem; border-color: var(--bs-border-color-translucent);">
+                                        <thead>
+                                            <tr class="text-secondary">
+                                                <th style="border: none;"></th>
+                                                <th>Pred Bear</th>
+                                                <th>Pred Neu</th>
+                                                <th>Pred Bull</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-secondary fw-bold" style="border: none; text-align: left; padding: 4px 2px;">Act Bear</td>
+                                                <td id="cm-0-0">0</td>
+                                                <td id="cm-0-1">0</td>
+                                                <td id="cm-0-2">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-secondary fw-bold" style="border: none; text-align: left; padding: 4px 2px;">Act Neu</td>
+                                                <td id="cm-1-0">0</td>
+                                                <td id="cm-1-1">0</td>
+                                                <td id="cm-1-2">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-secondary fw-bold" style="border: none; text-align: left; padding: 4px 2px;">Act Bull</td>
+                                                <td id="cm-2-0">0</td>
+                                                <td id="cm-2-1">0</td>
+                                                <td id="cm-2-2">0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Feature Importance Row -->
+                        <div class="row g-3 mt-3 text-start">
+                            <div class="col-12">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                    <div class="fw-bold text-secondary mb-3" style="font-size: 0.85rem;"><i class="bi bi-bar-chart-fill text-info me-1"></i> Top Features Used by XGBoost (Relative Feature Importance)</div>
+                                    <div class="row g-3" id="xgb-importance-container">
+                                        <!-- feature progress bars populated by JS -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategy Backtesting Performance Chart -->
+                    <div id="backtest-section" class="mt-4 d-none">
+                        <hr class="border-secondary-subtle">
+                        <h6 class="text-white mb-3"><i class="bi bi-graph-up text-info me-2"></i> XGBoost Strategy Backtesting (2025-2026 Test Period)</h6>
+                        <p class="text-secondary mb-3" style="font-size: 0.85rem;" id="lbl-backtest-desc">
+                            Cumulative returns comparison: Daily rebalanced portfolio of Nifty 50 stocks predicted bullish (Bullish Prob > 0.42) vs Nifty 50 average daily benchmark return.
+                        </p>
+                        
+                        <!-- Quant Performance Grid -->
+                        <div class="row g-3 mb-3 text-center">
+                            <div class="col-md-4">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                    <div class="metric-title text-secondary mb-1" style="font-size: 0.8rem;">Strategy Alpha</div>
+                                    <div class="metric-value text-success fs-4 fw-bold" id="lbl-backtest-alpha">+0.00%</div>
+                                    <div class="text-secondary mt-1" style="font-size: 0.72rem;">Excess Cumulative Return</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                    <div class="metric-title text-secondary mb-1" style="font-size: 0.8rem;">Information Ratio</div>
+                                    <div class="metric-value text-info fs-4 fw-bold" id="lbl-backtest-ir">0.000</div>
+                                    <div class="text-secondary mt-1" style="font-size: 0.72rem;">Active Risk Efficiency</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle">
+                                    <div class="metric-title text-secondary mb-1" style="font-size: 0.8rem;">Max Drawdown (Strat)</div>
+                                    <div class="metric-value text-danger fs-4 fw-bold" id="lbl-backtest-maxdd">-0.00%</div>
+                                    <div class="text-secondary mt-1" style="font-size: 0.72rem;">Peak-to-Trough Decline</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Side by Side Comparison Table -->
+                        <div class="table-responsive mb-3">
+                            <table class="table table-dark table-bordered text-center align-middle mb-0" style="font-size: 0.825rem; border-color: var(--bs-border-color-translucent);">
+                                <thead>
+                                    <tr class="text-secondary">
+                                        <th style="text-align: left;">Performance Metric</th>
+                                        <th>XGBoost Strategy</th>
+                                        <th>Nifty 50 Benchmark</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-secondary fw-semibold" style="text-align: left;">Cumulative Return</td>
+                                        <td id="lbl-backtest-strat-cum" class="fw-bold text-success">+0.00%</td>
+                                        <td id="lbl-backtest-bench-cum" class="text-secondary">+0.00%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary fw-semibold" style="text-align: left;">Annualized Return</td>
+                                        <td id="lbl-backtest-strat-ann" class="fw-bold text-success">+0.00%</td>
+                                        <td id="lbl-backtest-bench-ann" class="text-secondary">+0.00%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary fw-semibold" style="text-align: left;">Annualized Volatility</td>
+                                        <td id="lbl-backtest-strat-vol">0.00%</td>
+                                        <td id="lbl-backtest-bench-vol" class="text-secondary">0.00%</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary fw-semibold" style="text-align: left;">Sharpe Ratio (Rf=0%)</td>
+                                        <td id="lbl-backtest-strat-sharpe" class="fw-bold text-success">0.000</td>
+                                        <td id="lbl-backtest-bench-sharpe" class="text-secondary">0.000</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-secondary fw-semibold" style="text-align: left;">Daily Win Rate</td>
+                                        <td id="lbl-backtest-strat-win">0.00%</td>
+                                        <td id="lbl-backtest-bench-win" class="text-secondary">0.00%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="border border-secondary-subtle rounded-3 p-3 bg-dark-subtle" style="position: relative; height: 320px; width: 100%;">
+                            <canvas id="backtest-chart"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 mt-5 border-top border-secondary-subtle">
+        <div class="container">
+            <p class="text-muted mb-1" style="font-size: 0.8rem;">Powered by:</p>
+            <p class="text-secondary fw-semibold mb-0" style="font-size: 0.85rem; letter-spacing: 0.05em;">
+                FastAPI &bull; LangGraph &bull; Gemini &bull; XGBoost &bull; FinBERT &bull; ChromaDB
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+

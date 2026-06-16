@@ -1,0 +1,1291 @@
+{
+  "daily_returns": [
+    {
+      "date": "2025-05-13",
+      "strategy_return": 0.0,
+      "benchmark_return": 1.57
+    },
+    {
+      "date": "2025-05-14",
+      "strategy_return": 0.84,
+      "benchmark_return": 1.93
+    },
+    {
+      "date": "2025-05-15",
+      "strategy_return": 2.31,
+      "benchmark_return": 3.57
+    },
+    {
+      "date": "2025-05-16",
+      "strategy_return": 0.99,
+      "benchmark_return": 3.39
+    },
+    {
+      "date": "2025-05-19",
+      "strategy_return": 3.2,
+      "benchmark_return": 3.09
+    },
+    {
+      "date": "2025-05-20",
+      "strategy_return": 2.54,
+      "benchmark_return": 2.0
+    },
+    {
+      "date": "2025-05-21",
+      "strategy_return": 3.11,
+      "benchmark_return": 2.54
+    },
+    {
+      "date": "2025-05-22",
+      "strategy_return": 2.44,
+      "benchmark_return": 1.7
+    },
+    {
+      "date": "2025-05-23",
+      "strategy_return": 3.68,
+      "benchmark_return": 2.7
+    },
+    {
+      "date": "2025-05-26",
+      "strategy_return": 5.05,
+      "benchmark_return": 3.32
+    },
+    {
+      "date": "2025-05-27",
+      "strategy_return": 4.37,
+      "benchmark_return": 2.59
+    },
+    {
+      "date": "2025-05-28",
+      "strategy_return": 3.74,
+      "benchmark_return": 2.29
+    },
+    {
+      "date": "2025-05-29",
+      "strategy_return": 3.57,
+      "benchmark_return": 2.62
+    },
+    {
+      "date": "2025-05-30",
+      "strategy_return": 2.5,
+      "benchmark_return": 2.28
+    },
+    {
+      "date": "2025-06-02",
+      "strategy_return": 3.06,
+      "benchmark_return": 2.14
+    },
+    {
+      "date": "2025-06-03",
+      "strategy_return": 2.47,
+      "benchmark_return": 1.42
+    },
+    {
+      "date": "2025-06-04",
+      "strategy_return": 3.38,
+      "benchmark_return": 1.74
+    },
+    {
+      "date": "2025-06-05",
+      "strategy_return": 3.77,
+      "benchmark_return": 2.28
+    },
+    {
+      "date": "2025-06-06",
+      "strategy_return": 4.49,
+      "benchmark_return": 3.32
+    },
+    {
+      "date": "2025-06-09",
+      "strategy_return": 5.48,
+      "benchmark_return": 3.74
+    },
+    {
+      "date": "2025-06-10",
+      "strategy_return": 5.84,
+      "benchmark_return": 3.74
+    },
+    {
+      "date": "2025-06-11",
+      "strategy_return": 6.11,
+      "benchmark_return": 3.9
+    },
+    {
+      "date": "2025-06-12",
+      "strategy_return": 5.06,
+      "benchmark_return": 2.85
+    },
+    {
+      "date": "2025-06-13",
+      "strategy_return": 4.76,
+      "benchmark_return": 2.15
+    },
+    {
+      "date": "2025-06-16",
+      "strategy_return": 6.01,
+      "benchmark_return": 3.09
+    },
+    {
+      "date": "2025-06-17",
+      "strategy_return": 5.14,
+      "benchmark_return": 2.71
+    },
+    {
+      "date": "2025-06-18",
+      "strategy_return": 5.26,
+      "benchmark_return": 2.53
+    },
+    {
+      "date": "2025-06-19",
+      "strategy_return": 4.89,
+      "benchmark_return": 2.46
+    },
+    {
+      "date": "2025-06-20",
+      "strategy_return": 5.8,
+      "benchmark_return": 3.78
+    },
+    {
+      "date": "2025-06-23",
+      "strategy_return": 6.0,
+      "benchmark_return": 3.19
+    },
+    {
+      "date": "2025-06-24",
+      "strategy_return": 6.13,
+      "benchmark_return": 3.49
+    },
+    {
+      "date": "2025-06-25",
+      "strategy_return": 6.91,
+      "benchmark_return": 4.32
+    },
+    {
+      "date": "2025-06-26",
+      "strategy_return": 8.73,
+      "benchmark_return": 5.58
+    },
+    {
+      "date": "2025-06-27",
+      "strategy_return": 9.94,
+      "benchmark_return": 5.95
+    },
+    {
+      "date": "2025-06-30",
+      "strategy_return": 9.41,
+      "benchmark_return": 5.45
+    },
+    {
+      "date": "2025-07-01",
+      "strategy_return": 9.37,
+      "benchmark_return": 5.55
+    },
+    {
+      "date": "2025-07-02",
+      "strategy_return": 8.63,
+      "benchmark_return": 5.18
+    },
+    {
+      "date": "2025-07-03",
+      "strategy_return": 8.46,
+      "benchmark_return": 4.99
+    },
+    {
+      "date": "2025-07-04",
+      "strategy_return": 8.9,
+      "benchmark_return": 5.22
+    },
+    {
+      "date": "2025-07-07",
+      "strategy_return": 8.87,
+      "benchmark_return": 5.22
+    },
+    {
+      "date": "2025-07-08",
+      "strategy_return": 8.93,
+      "benchmark_return": 5.47
+    },
+    {
+      "date": "2025-07-09",
+      "strategy_return": 8.53,
+      "benchmark_return": 5.28
+    },
+    {
+      "date": "2025-07-10",
+      "strategy_return": 8.01,
+      "benchmark_return": 4.78
+    },
+    {
+      "date": "2025-07-11",
+      "strategy_return": 6.95,
+      "benchmark_return": 3.93
+    },
+    {
+      "date": "2025-07-14",
+      "strategy_return": 6.69,
+      "benchmark_return": 3.65
+    },
+    {
+      "date": "2025-07-15",
+      "strategy_return": 8.14,
+      "benchmark_return": 4.12
+    },
+    {
+      "date": "2025-07-16",
+      "strategy_return": 7.93,
+      "benchmark_return": 4.19
+    },
+    {
+      "date": "2025-07-17",
+      "strategy_return": 8.24,
+      "benchmark_return": 3.77
+    },
+    {
+      "date": "2025-07-18",
+      "strategy_return": 7.82,
+      "benchmark_return": 3.18
+    },
+    {
+      "date": "2025-07-21",
+      "strategy_return": 8.13,
+      "benchmark_return": 3.69
+    },
+    {
+      "date": "2025-07-22",
+      "strategy_return": 7.93,
+      "benchmark_return": 3.56
+    },
+    {
+      "date": "2025-07-23",
+      "strategy_return": 8.46,
+      "benchmark_return": 4.22
+    },
+    {
+      "date": "2025-07-24",
+      "strategy_return": 7.79,
+      "benchmark_return": 3.57
+    },
+    {
+      "date": "2025-07-25",
+      "strategy_return": 6.94,
+      "benchmark_return": 2.64
+    },
+    {
+      "date": "2025-07-28",
+      "strategy_return": 5.57,
+      "benchmark_return": 1.99
+    },
+    {
+      "date": "2025-07-29",
+      "strategy_return": 5.76,
+      "benchmark_return": 2.57
+    },
+    {
+      "date": "2025-07-30",
+      "strategy_return": 6.1,
+      "benchmark_return": 2.71
+    },
+    {
+      "date": "2025-07-31",
+      "strategy_return": 5.34,
+      "benchmark_return": 2.35
+    },
+    {
+      "date": "2025-08-01",
+      "strategy_return": 3.44,
+      "benchmark_return": 1.51
+    },
+    {
+      "date": "2025-08-04",
+      "strategy_return": 5.02,
+      "benchmark_return": 2.17
+    },
+    {
+      "date": "2025-08-05",
+      "strategy_return": 5.01,
+      "benchmark_return": 1.86
+    },
+    {
+      "date": "2025-08-06",
+      "strategy_return": 4.24,
+      "benchmark_return": 1.55
+    },
+    {
+      "date": "2025-08-07",
+      "strategy_return": 4.65,
+      "benchmark_return": 1.64
+    },
+    {
+      "date": "2025-08-08",
+      "strategy_return": 3.7,
+      "benchmark_return": 0.68
+    },
+    {
+      "date": "2025-08-11",
+      "strategy_return": 4.45,
+      "benchmark_return": 1.6
+    },
+    {
+      "date": "2025-08-12",
+      "strategy_return": 4.19,
+      "benchmark_return": 1.19
+    },
+    {
+      "date": "2025-08-13",
+      "strategy_return": 4.63,
+      "benchmark_return": 1.74
+    },
+    {
+      "date": "2025-08-14",
+      "strategy_return": 4.88,
+      "benchmark_return": 1.79
+    },
+    {
+      "date": "2025-08-18",
+      "strategy_return": 5.95,
+      "benchmark_return": 2.8
+    },
+    {
+      "date": "2025-08-19",
+      "strategy_return": 5.7,
+      "benchmark_return": 3.23
+    },
+    {
+      "date": "2025-08-20",
+      "strategy_return": 5.82,
+      "benchmark_return": 3.52
+    },
+    {
+      "date": "2025-08-21",
+      "strategy_return": 5.64,
+      "benchmark_return": 3.66
+    },
+    {
+      "date": "2025-08-22",
+      "strategy_return": 5.07,
+      "benchmark_return": 2.77
+    },
+    {
+      "date": "2025-08-25",
+      "strategy_return": 5.76,
+      "benchmark_return": 3.18
+    },
+    {
+      "date": "2025-08-26",
+      "strategy_return": 4.35,
+      "benchmark_return": 2.12
+    },
+    {
+      "date": "2025-08-28",
+      "strategy_return": 3.87,
+      "benchmark_return": 1.25
+    },
+    {
+      "date": "2025-08-29",
+      "strategy_return": 3.91,
+      "benchmark_return": 0.94
+    },
+    {
+      "date": "2025-09-01",
+      "strategy_return": 4.9,
+      "benchmark_return": 1.76
+    },
+    {
+      "date": "2025-09-02",
+      "strategy_return": 5.15,
+      "benchmark_return": 1.57
+    },
+    {
+      "date": "2025-09-03",
+      "strategy_return": 5.98,
+      "benchmark_return": 2.13
+    },
+    {
+      "date": "2025-09-04",
+      "strategy_return": 6.26,
+      "benchmark_return": 2.21
+    },
+    {
+      "date": "2025-09-05",
+      "strategy_return": 6.87,
+      "benchmark_return": 2.24
+    },
+    {
+      "date": "2025-09-08",
+      "strategy_return": 6.93,
+      "benchmark_return": 2.37
+    },
+    {
+      "date": "2025-09-09",
+      "strategy_return": 7.92,
+      "benchmark_return": 2.77
+    },
+    {
+      "date": "2025-09-10",
+      "strategy_return": 8.19,
+      "benchmark_return": 3.2
+    },
+    {
+      "date": "2025-09-11",
+      "strategy_return": 8.61,
+      "benchmark_return": 3.33
+    },
+    {
+      "date": "2025-09-12",
+      "strategy_return": 9.39,
+      "benchmark_return": 3.78
+    },
+    {
+      "date": "2025-09-15",
+      "strategy_return": 9.16,
+      "benchmark_return": 3.6
+    },
+    {
+      "date": "2025-09-16",
+      "strategy_return": 9.81,
+      "benchmark_return": 4.3
+    },
+    {
+      "date": "2025-09-17",
+      "strategy_return": 10.05,
+      "benchmark_return": 4.68
+    },
+    {
+      "date": "2025-09-18",
+      "strategy_return": 10.47,
+      "benchmark_return": 5.06
+    },
+    {
+      "date": "2025-09-19",
+      "strategy_return": 10.61,
+      "benchmark_return": 4.66
+    },
+    {
+      "date": "2025-09-22",
+      "strategy_return": 10.35,
+      "benchmark_return": 4.15
+    },
+    {
+      "date": "2025-09-23",
+      "strategy_return": 10.59,
+      "benchmark_return": 4.01
+    },
+    {
+      "date": "2025-09-24",
+      "strategy_return": 9.68,
+      "benchmark_return": 3.55
+    },
+    {
+      "date": "2025-09-25",
+      "strategy_return": 8.43,
+      "benchmark_return": 2.86
+    },
+    {
+      "date": "2025-09-26",
+      "strategy_return": 6.72,
+      "benchmark_return": 1.88
+    },
+    {
+      "date": "2025-09-29",
+      "strategy_return": 6.67,
+      "benchmark_return": 1.8
+    },
+    {
+      "date": "2025-09-30",
+      "strategy_return": 6.23,
+      "benchmark_return": 1.7
+    },
+    {
+      "date": "2025-10-01",
+      "strategy_return": 6.52,
+      "benchmark_return": 2.63
+    },
+    {
+      "date": "2025-10-03",
+      "strategy_return": 6.75,
+      "benchmark_return": 2.87
+    },
+    {
+      "date": "2025-10-06",
+      "strategy_return": 7.03,
+      "benchmark_return": 3.63
+    },
+    {
+      "date": "2025-10-07",
+      "strategy_return": 6.67,
+      "benchmark_return": 3.76
+    },
+    {
+      "date": "2025-10-08",
+      "strategy_return": 6.68,
+      "benchmark_return": 3.5
+    },
+    {
+      "date": "2025-10-09",
+      "strategy_return": 7.76,
+      "benchmark_return": 4.06
+    },
+    {
+      "date": "2025-10-10",
+      "strategy_return": 8.26,
+      "benchmark_return": 4.49
+    },
+    {
+      "date": "2025-10-13",
+      "strategy_return": 7.85,
+      "benchmark_return": 4.25
+    },
+    {
+      "date": "2025-10-14",
+      "strategy_return": 7.54,
+      "benchmark_return": 3.91
+    },
+    {
+      "date": "2025-10-15",
+      "strategy_return": 9.17,
+      "benchmark_return": 4.65
+    },
+    {
+      "date": "2025-10-16",
+      "strategy_return": 9.59,
+      "benchmark_return": 5.73
+    },
+    {
+      "date": "2025-10-17",
+      "strategy_return": 10.76,
+      "benchmark_return": 6.24
+    },
+    {
+      "date": "2025-10-20",
+      "strategy_return": 10.57,
+      "benchmark_return": 6.8
+    },
+    {
+      "date": "2025-10-21",
+      "strategy_return": 10.69,
+      "benchmark_return": 6.9
+    },
+    {
+      "date": "2025-10-23",
+      "strategy_return": 10.47,
+      "benchmark_return": 6.99
+    },
+    {
+      "date": "2025-10-24",
+      "strategy_return": 10.13,
+      "benchmark_return": 6.6
+    },
+    {
+      "date": "2025-10-27",
+      "strategy_return": 11.46,
+      "benchmark_return": 7.3
+    },
+    {
+      "date": "2025-10-28",
+      "strategy_return": 12.06,
+      "benchmark_return": 7.18
+    },
+    {
+      "date": "2025-10-29",
+      "strategy_return": 13.58,
+      "benchmark_return": 7.67
+    },
+    {
+      "date": "2025-10-30",
+      "strategy_return": 14.46,
+      "benchmark_return": 6.94
+    },
+    {
+      "date": "2025-10-31",
+      "strategy_return": 13.01,
+      "benchmark_return": 6.3
+    },
+    {
+      "date": "2025-11-03",
+      "strategy_return": 12.72,
+      "benchmark_return": 6.47
+    },
+    {
+      "date": "2025-11-04",
+      "strategy_return": 13.08,
+      "benchmark_return": 5.78
+    },
+    {
+      "date": "2025-11-06",
+      "strategy_return": 12.22,
+      "benchmark_return": 5.42
+    },
+    {
+      "date": "2025-11-07",
+      "strategy_return": 12.14,
+      "benchmark_return": 5.35
+    },
+    {
+      "date": "2025-11-10",
+      "strategy_return": 12.17,
+      "benchmark_return": 5.68
+    },
+    {
+      "date": "2025-11-11",
+      "strategy_return": 12.98,
+      "benchmark_return": 6.18
+    },
+    {
+      "date": "2025-11-12",
+      "strategy_return": 13.61,
+      "benchmark_return": 6.93
+    },
+    {
+      "date": "2025-11-13",
+      "strategy_return": 13.17,
+      "benchmark_return": 6.94
+    },
+    {
+      "date": "2025-11-14",
+      "strategy_return": 13.16,
+      "benchmark_return": 7.07
+    },
+    {
+      "date": "2025-11-17",
+      "strategy_return": 14.15,
+      "benchmark_return": 7.5
+    },
+    {
+      "date": "2025-11-18",
+      "strategy_return": 13.39,
+      "benchmark_return": 7.07
+    },
+    {
+      "date": "2025-11-19",
+      "strategy_return": 13.9,
+      "benchmark_return": 7.66
+    },
+    {
+      "date": "2025-11-20",
+      "strategy_return": 14.34,
+      "benchmark_return": 8.24
+    },
+    {
+      "date": "2025-11-21",
+      "strategy_return": 13.87,
+      "benchmark_return": 7.73
+    },
+    {
+      "date": "2025-11-24",
+      "strategy_return": 13.35,
+      "benchmark_return": 7.28
+    },
+    {
+      "date": "2025-11-25",
+      "strategy_return": 12.9,
+      "benchmark_return": 6.97
+    },
+    {
+      "date": "2025-11-26",
+      "strategy_return": 14.54,
+      "benchmark_return": 8.29
+    },
+    {
+      "date": "2025-11-27",
+      "strategy_return": 14.54,
+      "benchmark_return": 8.33
+    },
+    {
+      "date": "2025-11-28",
+      "strategy_return": 14.74,
+      "benchmark_return": 8.28
+    },
+    {
+      "date": "2025-12-01",
+      "strategy_return": 14.91,
+      "benchmark_return": 8.17
+    },
+    {
+      "date": "2025-12-02",
+      "strategy_return": 14.79,
+      "benchmark_return": 7.58
+    },
+    {
+      "date": "2025-12-03",
+      "strategy_return": 14.32,
+      "benchmark_return": 7.39
+    },
+    {
+      "date": "2025-12-04",
+      "strategy_return": 14.72,
+      "benchmark_return": 7.58
+    },
+    {
+      "date": "2025-12-05",
+      "strategy_return": 15.24,
+      "benchmark_return": 8.21
+    },
+    {
+      "date": "2025-12-08",
+      "strategy_return": 14.32,
+      "benchmark_return": 7.28
+    },
+    {
+      "date": "2025-12-09",
+      "strategy_return": 14.0,
+      "benchmark_return": 6.78
+    },
+    {
+      "date": "2025-12-10",
+      "strategy_return": 13.84,
+      "benchmark_return": 6.44
+    },
+    {
+      "date": "2025-12-11",
+      "strategy_return": 14.57,
+      "benchmark_return": 7.02
+    },
+    {
+      "date": "2025-12-12",
+      "strategy_return": 14.15,
+      "benchmark_return": 7.64
+    },
+    {
+      "date": "2025-12-15",
+      "strategy_return": 14.69,
+      "benchmark_return": 7.56
+    },
+    {
+      "date": "2025-12-16",
+      "strategy_return": 14.24,
+      "benchmark_return": 6.87
+    },
+    {
+      "date": "2025-12-17",
+      "strategy_return": 14.2,
+      "benchmark_return": 6.69
+    },
+    {
+      "date": "2025-12-18",
+      "strategy_return": 14.36,
+      "benchmark_return": 6.68
+    },
+    {
+      "date": "2025-12-19",
+      "strategy_return": 15.01,
+      "benchmark_return": 7.3
+    },
+    {
+      "date": "2025-12-22",
+      "strategy_return": 15.84,
+      "benchmark_return": 8.16
+    },
+    {
+      "date": "2025-12-23",
+      "strategy_return": 15.03,
+      "benchmark_return": 8.18
+    },
+    {
+      "date": "2025-12-24",
+      "strategy_return": 14.82,
+      "benchmark_return": 8.03
+    },
+    {
+      "date": "2025-12-26",
+      "strategy_return": 14.38,
+      "benchmark_return": 7.62
+    },
+    {
+      "date": "2025-12-29",
+      "strategy_return": 13.2,
+      "benchmark_return": 7.2
+    },
+    {
+      "date": "2025-12-30",
+      "strategy_return": 13.46,
+      "benchmark_return": 7.19
+    },
+    {
+      "date": "2025-12-31",
+      "strategy_return": 14.58,
+      "benchmark_return": 7.98
+    },
+    {
+      "date": "2026-01-01",
+      "strategy_return": 15.15,
+      "benchmark_return": 8.05
+    },
+    {
+      "date": "2026-01-02",
+      "strategy_return": 16.49,
+      "benchmark_return": 8.8
+    },
+    {
+      "date": "2026-01-05",
+      "strategy_return": 16.96,
+      "benchmark_return": 8.48
+    },
+    {
+      "date": "2026-01-06",
+      "strategy_return": 16.48,
+      "benchmark_return": 8.18
+    },
+    {
+      "date": "2026-01-07",
+      "strategy_return": 16.26,
+      "benchmark_return": 8.03
+    },
+    {
+      "date": "2026-01-08",
+      "strategy_return": 15.61,
+      "benchmark_return": 6.93
+    },
+    {
+      "date": "2026-01-09",
+      "strategy_return": 15.22,
+      "benchmark_return": 6.13
+    },
+    {
+      "date": "2026-01-12",
+      "strategy_return": 15.96,
+      "benchmark_return": 6.58
+    },
+    {
+      "date": "2026-01-13",
+      "strategy_return": 15.59,
+      "benchmark_return": 6.34
+    },
+    {
+      "date": "2026-01-14",
+      "strategy_return": 14.25,
+      "benchmark_return": 6.06
+    },
+    {
+      "date": "2026-01-15",
+      "strategy_return": 14.25,
+      "benchmark_return": 6.09
+    },
+    {
+      "date": "2026-01-16",
+      "strategy_return": 13.19,
+      "benchmark_return": 6.21
+    },
+    {
+      "date": "2026-01-19",
+      "strategy_return": 15.99,
+      "benchmark_return": 5.76
+    },
+    {
+      "date": "2026-01-20",
+      "strategy_return": 13.28,
+      "benchmark_return": 4.3
+    },
+    {
+      "date": "2026-01-21",
+      "strategy_return": 13.26,
+      "benchmark_return": 3.99
+    },
+    {
+      "date": "2026-01-22",
+      "strategy_return": 13.5,
+      "benchmark_return": 4.54
+    },
+    {
+      "date": "2026-01-23",
+      "strategy_return": 12.47,
+      "benchmark_return": 3.54
+    },
+    {
+      "date": "2026-01-27",
+      "strategy_return": 14.74,
+      "benchmark_return": 4.07
+    },
+    {
+      "date": "2026-01-28",
+      "strategy_return": 13.97,
+      "benchmark_return": 4.76
+    },
+    {
+      "date": "2026-01-29",
+      "strategy_return": 14.29,
+      "benchmark_return": 5.07
+    },
+    {
+      "date": "2026-01-30",
+      "strategy_return": 12.94,
+      "benchmark_return": 4.67
+    },
+    {
+      "date": "2026-02-02",
+      "strategy_return": 12.43,
+      "benchmark_return": 3.71
+    },
+    {
+      "date": "2026-02-03",
+      "strategy_return": 17.6,
+      "benchmark_return": 6.35
+    },
+    {
+      "date": "2026-02-04",
+      "strategy_return": 18.65,
+      "benchmark_return": 6.55
+    },
+    {
+      "date": "2026-02-05",
+      "strategy_return": 18.22,
+      "benchmark_return": 6.0
+    },
+    {
+      "date": "2026-02-06",
+      "strategy_return": 19.88,
+      "benchmark_return": 6.21
+    },
+    {
+      "date": "2026-02-09",
+      "strategy_return": 19.83,
+      "benchmark_return": 6.93
+    },
+    {
+      "date": "2026-02-10",
+      "strategy_return": 19.43,
+      "benchmark_return": 7.21
+    },
+    {
+      "date": "2026-02-11",
+      "strategy_return": 20.1,
+      "benchmark_return": 7.29
+    },
+    {
+      "date": "2026-02-12",
+      "strategy_return": 16.65,
+      "benchmark_return": 6.68
+    },
+    {
+      "date": "2026-02-13",
+      "strategy_return": 14.7,
+      "benchmark_return": 5.29
+    },
+    {
+      "date": "2026-02-16",
+      "strategy_return": 15.78,
+      "benchmark_return": 6.16
+    },
+    {
+      "date": "2026-02-17",
+      "strategy_return": 16.34,
+      "benchmark_return": 6.34
+    },
+    {
+      "date": "2026-02-18",
+      "strategy_return": 16.49,
+      "benchmark_return": 6.73
+    },
+    {
+      "date": "2026-02-19",
+      "strategy_return": 14.22,
+      "benchmark_return": 5.22
+    },
+    {
+      "date": "2026-02-20",
+      "strategy_return": 15.41,
+      "benchmark_return": 5.7
+    },
+    {
+      "date": "2026-02-23",
+      "strategy_return": 17.07,
+      "benchmark_return": 6.29
+    },
+    {
+      "date": "2026-02-24",
+      "strategy_return": 16.11,
+      "benchmark_return": 5.1
+    },
+    {
+      "date": "2026-02-25",
+      "strategy_return": 18.58,
+      "benchmark_return": 5.34
+    },
+    {
+      "date": "2026-02-26",
+      "strategy_return": 17.81,
+      "benchmark_return": 5.4
+    },
+    {
+      "date": "2026-02-27",
+      "strategy_return": 16.44,
+      "benchmark_return": 4.08
+    },
+    {
+      "date": "2026-03-02",
+      "strategy_return": 15.76,
+      "benchmark_return": 2.79
+    },
+    {
+      "date": "2026-03-04",
+      "strategy_return": 13.01,
+      "benchmark_return": 1.2
+    },
+    {
+      "date": "2026-03-05",
+      "strategy_return": 15.14,
+      "benchmark_return": 2.37
+    },
+    {
+      "date": "2026-03-06",
+      "strategy_return": 15.1,
+      "benchmark_return": 1.07
+    },
+    {
+      "date": "2026-03-09",
+      "strategy_return": 13.28,
+      "benchmark_return": -0.68
+    },
+    {
+      "date": "2026-03-10",
+      "strategy_return": 14.58,
+      "benchmark_return": 0.29
+    },
+    {
+      "date": "2026-03-11",
+      "strategy_return": 11.93,
+      "benchmark_return": -1.34
+    },
+    {
+      "date": "2026-03-12",
+      "strategy_return": 11.6,
+      "benchmark_return": -2.28
+    },
+    {
+      "date": "2026-03-13",
+      "strategy_return": 9.87,
+      "benchmark_return": -4.3
+    },
+    {
+      "date": "2026-03-16",
+      "strategy_return": 10.82,
+      "benchmark_return": -3.24
+    },
+    {
+      "date": "2026-03-17",
+      "strategy_return": 11.44,
+      "benchmark_return": -2.52
+    },
+    {
+      "date": "2026-03-18",
+      "strategy_return": 12.7,
+      "benchmark_return": -1.71
+    },
+    {
+      "date": "2026-03-19",
+      "strategy_return": 8.67,
+      "benchmark_return": -4.92
+    },
+    {
+      "date": "2026-03-20",
+      "strategy_return": 9.96,
+      "benchmark_return": -4.45
+    },
+    {
+      "date": "2026-03-23",
+      "strategy_return": 6.03,
+      "benchmark_return": -6.94
+    },
+    {
+      "date": "2026-03-24",
+      "strategy_return": 7.59,
+      "benchmark_return": -5.29
+    },
+    {
+      "date": "2026-03-25",
+      "strategy_return": 9.23,
+      "benchmark_return": -3.66
+    },
+    {
+      "date": "2026-03-27",
+      "strategy_return": 8.08,
+      "benchmark_return": -5.67
+    },
+    {
+      "date": "2026-03-30",
+      "strategy_return": 5.93,
+      "benchmark_return": -7.69
+    },
+    {
+      "date": "2026-04-01",
+      "strategy_return": 7.16,
+      "benchmark_return": -6.25
+    },
+    {
+      "date": "2026-04-02",
+      "strategy_return": 7.61,
+      "benchmark_return": -6.11
+    },
+    {
+      "date": "2026-04-06",
+      "strategy_return": 8.96,
+      "benchmark_return": -5.06
+    },
+    {
+      "date": "2026-04-07",
+      "strategy_return": 9.57,
+      "benchmark_return": -4.41
+    },
+    {
+      "date": "2026-04-08",
+      "strategy_return": 12.58,
+      "benchmark_return": -0.8
+    },
+    {
+      "date": "2026-04-09",
+      "strategy_return": 12.29,
+      "benchmark_return": -1.72
+    },
+    {
+      "date": "2026-04-10",
+      "strategy_return": 13.03,
+      "benchmark_return": -0.58
+    },
+    {
+      "date": "2026-04-13",
+      "strategy_return": 12.53,
+      "benchmark_return": -1.44
+    },
+    {
+      "date": "2026-04-15",
+      "strategy_return": 13.54,
+      "benchmark_return": 0.16
+    },
+    {
+      "date": "2026-04-16",
+      "strategy_return": 13.05,
+      "benchmark_return": 0.02
+    },
+    {
+      "date": "2026-04-17",
+      "strategy_return": 13.73,
+      "benchmark_return": 0.67
+    },
+    {
+      "date": "2026-04-20",
+      "strategy_return": 13.9,
+      "benchmark_return": 0.72
+    },
+    {
+      "date": "2026-04-21",
+      "strategy_return": 15.88,
+      "benchmark_return": 1.59
+    },
+    {
+      "date": "2026-04-22",
+      "strategy_return": 14.19,
+      "benchmark_return": 0.77
+    },
+    {
+      "date": "2026-04-23",
+      "strategy_return": 14.05,
+      "benchmark_return": -0.08
+    },
+    {
+      "date": "2026-04-24",
+      "strategy_return": 13.29,
+      "benchmark_return": -1.21
+    },
+    {
+      "date": "2026-04-27",
+      "strategy_return": 13.9,
+      "benchmark_return": -0.41
+    },
+    {
+      "date": "2026-04-28",
+      "strategy_return": 12.61,
+      "benchmark_return": -0.81
+    },
+    {
+      "date": "2026-04-29",
+      "strategy_return": 13.27,
+      "benchmark_return": -0.06
+    },
+    {
+      "date": "2026-04-30",
+      "strategy_return": 12.85,
+      "benchmark_return": -0.8
+    },
+    {
+      "date": "2026-05-01",
+      "strategy_return": 12.85,
+      "benchmark_return": -0.8
+    }
+  ],
+  "optimal_threshold": 0.5,
+  "optimization_grid": [
+    {
+      "threshold": 0.35,
+      "cumulative_return": 93.3,
+      "volatility": 13.85,
+      "sharpe_ratio": 1.403
+    },
+    {
+      "threshold": 0.38,
+      "cumulative_return": 106.62,
+      "volatility": 13.99,
+      "sharpe_ratio": 1.544
+    },
+    {
+      "threshold": 0.4,
+      "cumulative_return": 115.62,
+      "volatility": 14.1,
+      "sharpe_ratio": 1.631
+    },
+    {
+      "threshold": 0.42,
+      "cumulative_return": 129.82,
+      "volatility": 14.43,
+      "sharpe_ratio": 1.742
+    },
+    {
+      "threshold": 0.45,
+      "cumulative_return": 199.88,
+      "volatility": 15.24,
+      "sharpe_ratio": 2.26
+    },
+    {
+      "threshold": 0.48,
+      "cumulative_return": 324.77,
+      "volatility": 16.3,
+      "sharpe_ratio": 2.924
+    },
+    {
+      "threshold": 0.5,
+      "cumulative_return": 379.74,
+      "volatility": 17.84,
+      "sharpe_ratio": 2.949
+    },
+    {
+      "threshold": 0.55,
+      "cumulative_return": 393.43,
+      "volatility": 29.58,
+      "sharpe_ratio": 1.818
+    },
+    {
+      "threshold": 0.6,
+      "cumulative_return": 355.5,
+      "volatility": 28.19,
+      "sharpe_ratio": 1.791
+    }
+  ],
+  "metrics": {
+    "strategy": {
+      "cumulative_return": 12.85,
+      "annualized_return": 13.41,
+      "volatility": 15.6,
+      "sharpe_ratio": 0.86,
+      "max_drawdown": 11.81,
+      "win_rate": 51.65
+    },
+    "benchmark": {
+      "cumulative_return": -0.8,
+      "annualized_return": -0.83,
+      "volatility": 12.78,
+      "sharpe_ratio": -0.065,
+      "max_drawdown": 15.16,
+      "win_rate": 52.07
+    },
+    "alpha": 13.65,
+    "information_ratio": 1.479
+  }
+}

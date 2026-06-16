@@ -1,0 +1,452 @@
+/* Modern SaaS Style System */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root, [data-theme="dark"] {
+    --bg-body: #0f172a; /* Softer slate blue-gray */
+    --bg-card: #1e293b;
+    --bg-panel: #334155;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    --primary-color: #3b82f6; /* Trustworthy Blue */
+    --primary-hover: #2563eb;
+    --primary-light: rgba(59, 130, 246, 0.15);
+    
+    --success-color: #10b981;
+    --success-light: rgba(16, 185, 129, 0.15);
+    
+    --danger-color: #ef4444;
+    --danger-light: rgba(239, 68, 68, 0.15);
+    
+    --warning-color: #f59e0b;
+    --warning-light: rgba(245, 158, 11, 0.15);
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] {
+    --bg-body: #f8fafc; /* slate-50 */
+    --bg-card: #ffffff;
+    --bg-panel: #f1f5f9; /* slate-100 */
+    --border-color: #e2e8f0; /* slate-200 */
+    --border-subtle: #f8fafc; /* slate-50 */
+    
+    --text-primary: #0f172a; /* slate-900 */
+    --text-secondary: #475569; /* slate-600 */
+    --text-muted: #64748b; /* slate-500 */
+    
+    --primary-color: #2563eb; /* royal blue */
+    --primary-hover: #1d4ed8;
+    --primary-light: rgba(37, 99, 235, 0.1);
+    
+    --success-color: #059669;
+    --success-light: rgba(5, 150, 105, 0.1);
+    
+    --danger-color: #dc2626;
+    --danger-light: rgba(220, 38, 38, 0.1);
+    
+    --warning-color: #d97706;
+    --warning-light: rgba(217, 119, 6, 0.1);
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -1px rgba(15, 23, 42, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 3rem;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3, h4, h5, h6, .display-font {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Premium Card Overrides */
+.premium-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s ease;
+}
+
+.premium-card:hover {
+    transform: none; /* No cyberpunk bounce/translate */
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Layout adjustments */
+hr {
+    border-color: var(--border-color);
+    opacity: 0.8;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-body);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Search and Inputs */
+.search-input {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.search-input:focus, .form-control:focus, .form-select:focus {
+    background-color: var(--bg-card);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+    color: var(--text-primary);
+    outline: none;
+}
+
+.search-btn, .btn-primary {
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    font-weight: 500;
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.search-btn:hover, .btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Tab Overrides */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--border-color);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    color: var(--primary-color) !important;
+    border: none;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Metric Badges & Blocks */
+.metric-card {
+    padding: 1rem;
+}
+
+.metric-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Table Design */
+.table {
+    color: var(--text-primary) !important;
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table td {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Neutral overrides for Bootstrap classes */
+.text-white {
+    color: var(--text-primary) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.bg-dark-subtle {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.bg-dark {
+    background-color: var(--bg-body) !important;
+}
+
+.border-secondary-subtle {
+    border-color: var(--border-color) !important;
+}
+
+.border-secondary {
+    border-color: var(--border-color) !important;
+}
+
+/* Remove gradient text for a clean solid display */
+.gradient-text {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    color: var(--primary-color) !important;
+}
+
+/* Buttons */
+.btn-outline-info {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--bg-panel);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+/* Status Indicators (No neon glow) */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+.status-success { background-color: var(--success-color); box-shadow: none; }
+.status-pending { background-color: var(--warning-color); box-shadow: none; }
+.status-failed { background-color: var(--danger-color); box-shadow: none; }
+
+/* Badges */
+.badge.bg-info-subtle {
+    background-color: var(--primary-light) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-light) !important;
+}
+
+.badge.bg-success-subtle {
+    background-color: var(--success-light) !important;
+    color: var(--success-color) !important;
+    border-color: var(--success-light) !important;
+}
+
+.badge.bg-danger-subtle {
+    background-color: var(--danger-light) !important;
+    color: var(--danger-color) !important;
+    border-color: var(--danger-light) !important;
+}
+
+.badge.bg-warning-subtle {
+    background-color: var(--warning-light) !important;
+    color: var(--warning-color) !important;
+    border-color: var(--warning-light) !important;
+}
+
+/* Chat Layout adjustments */
+#chat-messages {
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+#chat-messages .align-self-start {
+    width: 95% !important;
+    max-width: 95% !important;
+}
+
+#chat-messages .align-self-end {
+    width: fit-content !important;
+    max-width: 90% !important;
+}
+
+.align-self-end.bg-info {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+.align-self-start.bg-dark-subtle {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Navbar theme styling */
+.navbar {
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.navbar-brand {
+    color: var(--text-primary) !important;
+}
+
+.navbar-brand i {
+    color: var(--primary-color) !important;
+}
+
+/* Alert Boxes */
+.alert-danger {
+    background-color: var(--danger-light) !important;
+    color: var(--danger-color) !important;
+    border-color: var(--danger-light) !important;
+}
+
+/* Markdown styling inside report */
+#advisory-report-body h1, 
+#advisory-report-body h2, 
+#advisory-report-body h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+#advisory-report-body p {
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+#advisory-report-body ul, 
+#advisory-report-body ol {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Truncation & Line clamping */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* Workflow Diagram styles */
+.workflow-modal-content {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.workflow-node-card {
+    background-color: var(--bg-panel) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.workflow-node-card:hover {
+    border-color: var(--primary-color);
+}
+
+/* Vertical Timeline for Recommendation Evolution */
+.evolution-timeline {
+    position: relative;
+    padding-left: 20px;
+    margin-left: 10px;
+    border-left: 2px solid var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-badge {
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 2px solid var(--bg-card);
+}
+
+.timeline-content {
+    padding-bottom: 5px;
+}
+
+.fs-8 {
+    font-size: 0.775rem !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+

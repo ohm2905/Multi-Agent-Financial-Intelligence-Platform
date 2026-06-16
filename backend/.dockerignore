@@ -1,0 +1,13 @@
+# Ignore OS metadata files that fail to build on external drives (due to xattr permissions)
+._*
+.DS_Store
+**/.DS_Store
+**/._*
+
+# Ignore python caching and virtual environments
+.venv
+__pycache__
+*.pyc
+
+# Ignore local database and cache directory (will be mapped via persistent volumes)
+data/
