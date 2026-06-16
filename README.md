@@ -8,19 +8,19 @@ An advanced, AI-powered financial intelligence and automated stock advisory copi
 
 ### 1. Main Advisory Dashboard
 *Real-time NSE stock analysis aggregating technical indicators, live FinBERT news sentiment, and XGBoost forecasts with dynamic SHAP explainability.*
-![Advisory Dashboard](./s_c/Screenshot%202026-06-16%20at%207.27.36%20AM.png)
+![Advisory Dashboard](./s_c/dashboard_overview.png)
 
 ### 2. Shares-Based Portfolio Risk Analyzer
 *Add asset share counts; the system automatically fetches live prices, computes portfolio allocations, calculates portfolio Beta, and scores diversification.*
-![Portfolio Manager](./s_c/Screenshot%202026-06-16%20at%207.47.23%20AM.png)
+![Portfolio Manager](./s_c/portfolio_manager.png)
 
 ### 3. Corporate Report Audit & Chat Assistant
 *Upload corporate PDFs, auto-generate strategic highlights, and chat conversationally with Gemini 2.5 Flash using local vector indexing.*
-![RAG Chat Assistant](./s_c/Screenshot%202026-06-16%20at%207.48.16%20AM.png)
+![RAG Chat Assistant](./s_c/chat_assistant.png)
 
 ### 4. Consolidated AI Advisory Report
 *Generate and download complete markdown/PDF executive summaries detailing drift analysis, financial ratios, and confidence scores.*
-![Advisory Report Preview](./s_c/Screenshot%202026-06-16%20at%207.50.17%20AM.png)
+![Advisory Report Preview](./s_c/advisory_report.png)
 
 ---
 
